@@ -1,18 +1,3 @@
-<<<<<<< Updated upstream
-$(document).ready(function() {
-	var queryURL = "https://api.yelp.com/v3/autocomplete?text=del&latitude=37.786882&longitude=-122.399972";
-	$.ajaxSetup({
-	    headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx'}
-	});
-	$.ajax({
-		url: queryURL,
-		method: "GET",
-		// Authorization: "Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx",
-	}).done(function(response){
-		console.log(response);
-	})
-})
-=======
 /*google maps api key AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
 
@@ -25,37 +10,25 @@ Authorization: Bearer < YOUR ACCESS TOKEN >*/
 //AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38
 // let key = "AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38";
 // let queryURL = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + key;
-// $.ajax({
-//     url: queryURL,
-//     method: "GET"
-// }).done(function (response) {
-//     console.log(response);
-// });
 
 $(window).on("load" , function(){
    
 geoFindMe();
-    console.log(geoFindMe()); 
+//console.log(geoFindMe()); 
    
 });
 
-function success(position) {
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
-
-    // output.innerHTML = '<p>Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°</p>';
-
-    // var img = new Image();
-    // img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=13&size=300x300&sensor=false";
-
-    output.appendChild(img);
-    // console.log(latitude);
-    // console.log(longitude);
-    return {
-        latitude: latitude,
-        longitude: longitude
-    };
-}
+ function success(position) {
+     var latitude = position.coords.latitude;
+     var longitude = position.coords.longitude;
+     console.log(latitude);
+     console.log(longitude);
+     //Add function that calls yelp api
+     return {
+         latitude: latitude,
+         longitude: longitude
+     };
+ }
 
 function geoFindMe() {
     var output = document.getElementById("out");
@@ -64,24 +37,63 @@ function geoFindMe() {
         output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
         return;
     }
-
+   
     function error() {
         output.innerHTML = "Unable to retrieve your location";
     }
-
-    output.innerHTML = "<p>Locating…</p>";
-
     return navigator.geolocation.getCurrentPosition(success, error);
 }
 
 let lat = success();
 console.log(latitude);
 
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyCgDQjadv4eM2WAjcqro9rxdiGdPAhoGV4",
+    authDomain: "brewmaster-bcf8f.firebaseapp.com",
+    databaseURL: "https://brewmaster-bcf8f.firebaseio.com",
+    projectId: "brewmaster-bcf8f",
+    storageBucket: "brewmaster-bcf8f.appspot.com",
+    messagingSenderId: "1057299715949"
+};
+firebase.initializeApp(config);
+
+var provider = new firebase.auth.GoogleAuthProvider();
+$("#login").on("click", function(){
+
+    firebase.auth().signInWithPopup(provider).then(function (result) {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    var token = result.credential.accessToken;
+    // The signed-in user info.
+    var user = result.user;
+    // ...
+    }).catch(function (error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // The email of the user's account used.
+    var email = error.email;
+    // The firebase.auth.AuthCredential type that was used.
+    var credential = error.credential;
+    // ...
+    });
+});
+firebase.auth().signOut().then(function () {
+    // Sign-out successful.
+}).catch(function (error) {
+    // An error happened.
+});
+
+
+
+
+
+
 // var email = document.getElementById('email');
 
 // function checkEmail(email) {
 
-    
+
 //     var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
 //     if (!filter.test(email.value)) {
@@ -95,31 +107,6 @@ console.log(latitude);
 //     event.preventDefault();
 //     checkEmail(email);
 // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // //display google map with geolocation
 // var map, infoWindow;
@@ -162,4 +149,3 @@ console.log(latitude);
 //         'Error: Your browser doesn\'t support geolocation.');
 //     infoWindow.open(map);
 // } 
->>>>>>> Stashed changes
