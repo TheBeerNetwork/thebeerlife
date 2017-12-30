@@ -18,17 +18,38 @@ geoFindMe();
    
 });
 
- function success(position) {
-     var latitude = position.coords.latitude;
-     var longitude = position.coords.longitude;
-     console.log(latitude);
-     console.log(longitude);
-     //Add function that calls yelp api
-     return {
-         latitude: latitude,
-         longitude: longitude
-     };
- }
+// Creates a modal for user login
+$("#modal_trigger").leanModal({
+    top: 100,
+    overlay: 0.6,
+    closeButton: ".modal_close"
+});
+
+$(function () {
+    // Calling Login Form
+    $("#login_form").click(function () {
+        $(".social_login").hide();
+        $(".user_login").show();
+        return false;
+    });
+    // Calling Register Form
+    $("#register_form").click(function () {
+        $(".social_login").hide();
+        $(".user_register").show();
+        $(".header_title").text('Register');
+        return false;
+    });
+    // Going back to Social Forms
+    $(".back_btn").click(function () {
+        $(".user_login").hide();
+        $(".user_register").hide();
+        $(".social_login").show();
+        $(".header_title").text('Login');
+        return false;
+    });
+});
+ 
+
 
 function geoFindMe() {
     var output = document.getElementById("out");
@@ -37,15 +58,25 @@ function geoFindMe() {
         output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
         return;
     }
+    //Option to get data out of geoFindMe function is to take function success out of the nest.
+    function success(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        console.log(latitude);
+        console.log(longitude);
+        //Add function that calls yelp api
+        return {
+            latitude: latitude,
+            longitude: longitude
+        };
+    }
    
     function error() {
         output.innerHTML = "Unable to retrieve your location";
     }
     return navigator.geolocation.getCurrentPosition(success, error);
-}
-
-let lat = success();
-console.log(latitude);
+    
+} 
 
 // Initialize Firebase
 var config = {
@@ -59,30 +90,54 @@ var config = {
 firebase.initializeApp(config);
 
 var provider = new firebase.auth.GoogleAuthProvider();
-$("#login").on("click", function(){
+//register new user with email and password including full name
+$("#register").on("click", function(e){
+    e.preventDefault();
+    let name = $("#name").val().trim();
+    let email = $("#mailReg").val().trim();
+    let password = $("#passwordReg").val().trim();
+    //check for real email
+    
 
-    firebase.auth().signInWithPopup(provider).then(function (result) {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    var token = result.credential.accessToken;
-    // The signed-in user info.
-    var user = result.user;
-    // ...
-    }).catch(function (error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // The email of the user's account used.
-    var email = error.email;
-    // The firebase.auth.AuthCredential type that was used.
-    var credential = error.credential;
-    // ...
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+    });   
+
+});
+//login existing user with email and password
+$("#login").on("click", function(e){
+    e.preventDefault();
+    let email = $("#email").val().trim();
+    let password = $("#password").val().trim();
+    
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
     });
+})
+//Real time authentication listener
+firebase.auth().onAuthStateChanged(user => {
+    if(user){
+        console.log(user);
+    }else{
+        console.log("not logged in");
+    }
 });
-firebase.auth().signOut().then(function () {
-    // Sign-out successful.
-}).catch(function (error) {
-    // An error happened.
+//Sign out button for user
+$("#signOut").on("click", function(){
+    firebase.auth().signOut();
 });
+
+
+    
+
+
+
+
+
 
 
 
