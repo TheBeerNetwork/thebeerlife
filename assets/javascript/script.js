@@ -89,7 +89,6 @@ var config = {
 };
 firebase.initializeApp(config);
 
-var provider = new firebase.auth.GoogleAuthProvider();
 //register new user with email and password including full name
 $("#register").on("click", function(e){
     e.preventDefault();
@@ -97,7 +96,6 @@ $("#register").on("click", function(e){
     let email = $("#mailReg").val().trim();
     let password = $("#passwordReg").val().trim();
     //check for real email
-    
 
     firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
         // Handle Errors here.
@@ -130,6 +128,40 @@ firebase.auth().onAuthStateChanged(user => {
 $("#signOut").on("click", function(){
     firebase.auth().signOut();
 });
+//Firebase google login authentication
+let provider = new firebase.auth.GoogleAuthProvider();
+
+function googleSignIn(){
+    firebase.auth().signInWithPopup(provider).then(function (result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        console.log(user);
+        // ...
+    }).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        console.log (errorCode);
+        // ...
+    });
+}
+//Google event button
+$(".google").on("click",function(){
+    googleSignIn();
+    console.log("working");
+});
+//Facebook event button
+$(".fb").on("click", function(){
+    facebookSignIn();
+    console.log("working");
+});
+
 
 
     

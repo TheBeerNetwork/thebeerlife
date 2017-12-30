@@ -11,11 +11,11 @@
             crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="assets/css/style.css">
         <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+      
+
     </head>
     <body>
-        <p>
-            <button onclick="geoFindMe()">Show my location</button>
-        </p>
+               
         <div id="out"></div>
         <div class="container">
 
@@ -29,11 +29,11 @@
                             <!-- Social Login -->
                             <div class="social_login">
                                 <div class="">
-                                    <a href="#" class="social_box fb">
+                                    <a id="facebook" class="social_box fb">
                                         <span class="icon"> <i class="fa fa-facebook"></i> </span>
                                         <span class="icon_title">Connect with Facebook</span>                
                                     </a>                
-                                    <a href="#" class="social_box google">
+                                    <a id="google" class="social_box google">
                                         <span class="icon"> <i class="fa fa-google-plus"></i> </span>
                                         <span class="icon_title">Connect with Google</span>
                                     </a>
@@ -100,7 +100,7 @@
                     </div>
                 </div>
             <button id="signOut" class="btn btn-default">Sign Out</button>
-
+                    <script src="https://apis.google.com/js/platform.js" async defer></script>
                     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
                     <script type="text/javascript" src="assets/javascript/jquery.leanModal.min.js"></script>
                     <script type="text/javascript" src="assets/javascript/script.js"></script>
