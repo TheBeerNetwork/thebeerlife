@@ -162,6 +162,26 @@ $(".fb").on("click", function(){
     console.log("working");
 });
 
+//creating firebase data list of the breweries in san diego
+let database = firebase.database();
+
+$("#submit").on("click", function(event){
+    event.preventDefault();
+    let name = $("#name").val();
+    let location = $("#location").val();
+    let beers = $("#beers").val();
+    let website = $("#website").val();
+
+    let brewRef = database.ref().child("Breweries");
+
+    brewRef.push().set({
+        name: name,
+        location: location,
+        website: website,
+        beer: beers,
+    });
+
+});
 
 
     
