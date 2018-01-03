@@ -64,6 +64,7 @@ function geoFindMe() {
         var longitude = position.coords.longitude;
         console.log(latitude);
         console.log(longitude);
+        
         //Add function that calls yelp api
         return {
             latitude: latitude,
@@ -77,7 +78,6 @@ function geoFindMe() {
     return navigator.geolocation.getCurrentPosition(success, error);
     
 } 
-
 // Initialize Firebase
 var config = {
     apiKey: "AIzaSyCgDQjadv4eM2WAjcqro9rxdiGdPAhoGV4",
@@ -120,6 +120,7 @@ $("#login").on("click", function(e){
 firebase.auth().onAuthStateChanged(user => {
     if(user){
         console.log(user);
+        console.log("logged in");
     }else{
         console.log("not logged in");
     }
@@ -162,26 +163,7 @@ $(".fb").on("click", function(){
     console.log("working");
 });
 
-//creating firebase data list of the breweries in san diego
-let database = firebase.database();
 
-$("#submit").on("click", function(event){
-    event.preventDefault();
-    let name = $("#name").val();
-    let location = $("#location").val();
-    let beers = $("#beers").val();
-    let website = $("#website").val();
-
-    let brewRef = database.ref().child("Breweries");
-
-    brewRef.push().set({
-        name: name,
-        location: location,
-        website: website,
-        beer: beers,
-    });
-
-});
 
 
     
