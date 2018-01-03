@@ -48,8 +48,6 @@ $(function () {
         return false;
     });
 });
- 
-
 
 function geoFindMe() {
     var output = document.getElementById("out");
