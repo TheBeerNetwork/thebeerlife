@@ -1,34 +1,136 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap is first then the regular css link !-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-    <!-- http://fontawesome.io/icon/twitter-square/ -->
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="assets/brewf.css">
-    <title> Brewmaster Project</title>
-</head>
+    <head>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <script src="https://use.fontawesome.com/7d45ae9051.js"></script>
+        <title>theBeerLife</title>        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+        crossorigin="anonymous">            
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>      
 
-<body>
-
-    <!--<div class="display-3">Brewmaster Guide to San Diego Breweries</div>!-->
-    <!-- Bootstrap picks up on the class navbar !-->
-    <nav class="navbar navbar-expand-md nabar-light" style="background-color:#ffd328">
-        <button type="button" data-toggle="collapse" data-target="#brewNav"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="brewNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="location.html" class="nav-link">Location</a></li>
-                <li class="nav-item" id="brewNav"><a href="list.html" class="nav-link">List</a></li>
-                <li class="nav-item" id="brewNav"><a href="login.html" class="nav-link">Login</a></li>
-                <li class="nav-item" id="brewNav"><a href="logout.html" class="nav-link">Logout</a></li>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md nabar-light" style="background-color:#ffd328">
+            <button type="button" data-toggle="collapse" data-target="#brewNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-around" id="brewNav">
+                <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="about.html" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="location.html" class="nav-link">Location</a>
+                </li>
+                <li class="nav-item" id="brewNav">
+                    <a href="list.html" class="nav-link">List</a>
+                </li>
+                <li class="nav-item" id="brewNav">
+                    <a id="modal_trigger" href="#modal" class="nav-link">Login</a>
+                </li>
+                <li class="nav-item" id="brewNav">
+                    <a id="signOut" class="nav-link">Logout</a>
+                </li>
             </ul>
-            <!--</u place all of the navi stuff here !-->
+            <div id="modal" class="popupContainer" style="display:none;">
+                <header class="popupHeader">
+                    <span class="header_title">Login</span>
+                    <span class="modal_close">
+                        <i class="fa fa-times"></i>
+                    </span>
+                </header>
+                <section class="popupBody">
+                    <!-- Social Login -->
+                    <div class="social_login">
+                        <div class="">
+                            <a id="facebook" class="social_box fb">
+                                <span class="icon">
+                                    <i class="fa fa-facebook"></i>
+                                </span>
+                                <span class="icon_title">Connect with Facebook</span>
+                            </a>
+                            <a id="google" class="social_box google">
+                                <span class="icon">
+                                    <i class="fa fa-google-plus"></i>
+                                </span>
+                                <span class="icon_title">Connect with Google</span>
+                            </a>
+                        </div>
+                        <div class="centeredText">
+                            <span>Or use your Email address</span>
+                        </div>
+                        <div class="action_btns">
+                            <div class="one_half">
+                                <a href="#" id="login_form" class="btn btn-default">Login</a>
+                            </div>
+                            <div class="one_half last">
+                                <a href="#" id="register_form" class="btn">Sign up</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Username & Password Login form -->
+                    <div class="user_login">
+                        <form>
+                            <label>Email / Username</label>
+                            <input type="text" id="email">
+                            <br>
+                            <label>Password</label>
+                            <input type="password" id="password">
+                            <br>
+                            <div class="checkbox">
+                                <input id="remember" type="checkbox" />
+                                <label for="remember">Remember me on this computer</label>
+                            </div>
+                            <div class="action_btns">
+                                <div class="one_half">
+                                    <a href="#" class="btn back_btn">
+                                        <i class="fa fa-angle-double-left"></i> Back</a>
+                                </div>
+                                <div class="one_half last">
+                                    <a href="#" id="login" class="btn btn_red">Login</a>
+                                </div>
+                            </div>
+                        </form>
+                        <a href="#" class="forgot_password">Forgot password?</a>
+                    </div>
+                    <!-- Register Form -->
+                    <div class="user_register">
+                        <form>
+                            <label>Full Name</label>
+                            <input type="text" id="name">
+                            <br>
+                            <label>Email Address</label>
+                            <input type="email" id="mailReg">
+                            <br>
+                            <label>Password</label>
+                            <input type="password" id="passwordReg">
+                            <br>
+                            <div class="checkbox">
+                                <input id="send_updates" type="checkbox" />
+                                <label for="send_updates">Send me occasional email updates</label>
+                            </div>
+                            <div class="action_btns">
+                                <div class="one_half">
+                                    <a href="#" class="btn back_btn">
+                                        <i class="fa fa-angle-double-left"></i> Back</a>
+                                </div>
+                                <div class="one_half last">
+                                    <a href="#" id="register" class="btn btn_red">Register</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+            </div>
+        </div>
+
     </nav>
     <div>
         <div class="container">
@@ -42,15 +144,27 @@
                             <li data-target="#car" data-slide-to="2" class="active"></li>
                         </ol>
                         <div class="carousel-inner">
-                            <div class="carousel-item active"><img class="w-100 d-block" src="http://placehold.it/1200x400/ff0000/440000"></div>
-                            <div class="carousel-item"><img class="w-100 d-block" src="http://placehold.it/1200x400/00ff00/ffffff"></div>
-                            <div class="carousel-item"><img class="w-100 d-block" src="http://placehold.it/1200x400/0000ff/ffffff"></div>
+
+                            <div class="carousel-item active">
+                                <img class="w-100 d-block" src="http://placehold.it/1200x400/ff0000/440000">
+                            </div>
+                            <div class="carousel-item">
+                                <img class="w-100 d-block" src="http://placehold.it/1200x400/00ff00/ffffff">
+                            </div>
+                            <div class="carousel-item">
+                                <img class="w-100 d-block" src="http://placehold.it/1200x400/0000ff/ffffff">
+                            </div>
+
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 ">
                     <div class="h2">Brewmaster List</div>
-                    <p>Here is a collection of most of the Breweries and Gastropubs in San Diego. Please hit the link below to submit your own reviews, and photos.</p> <a href="#" class="btn btn-primary">Submit Info</a> </div>
+
+                    <p>Here is a collection of most of the Breweries and Gastropubs in San Diego. Please hit the link below to submit
+                        your own reviews, and photos.</p>
+                    <a href="#" class="btn btn-primary">Submit Info</a>
+                </div>
             </div>
             <hr>
             <div class="row mt-2">
@@ -64,7 +178,11 @@
                                 <br> Rating
                                 <br> </div>
                         </div>
-                        <div class="card-footer"><a href="#" class="btn btn-success">Click Me For More Info</a></div>
+
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-success">Click Me For More Info</a>
+                        </div>
+
                     </div>
                 </div>
                 <div class="col-md-4 ">
@@ -78,7 +196,11 @@
                                 <br>
                             </div>
                         </div>
-                        <div class="card-footer"><a href="#" class="btn btn-success">Click Me For More Info</a></div>
+
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-success">Click Me For More Info</a>
+                        </div>
+
                     </div>
                 </div>
                 <div class="col-md-4 ">
@@ -92,27 +214,53 @@
                                 <br>
                             </div>
                         </div>
-                        <div class="card-footer"><a href="#" class="btn btn-success">Click Me For More Info</a></div>
+
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-success">Click Me For More Info</a>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
     <!-- foot content -->
     <footer class="container-fluid darkgreen text-light mt-3">
         <p class="text-center">© 2017 brewmaster</p>
         <div class="text-center">
             <ul class="list-inline">
-                <li class="list-inline-item"><a href="" target="_blank"><i class="fa fa-youtube-square fa-inverse" aria-hidden="true"></i></a></li>
-                <li class="list-inline-item"><a href="" target="_blank"><i class="fa fa-twitter-square  fa-inverse" aria-hidden="true"></i></a></li>
-                <li class="list-inline-item"><a href="" target="_blank"><i class="fa fa-facebook-square fa-inverse" aria-hidden="true"></i></a></li>
+
+                <li class="list-inline-item">
+                    <a href="" target="_blank">
+                        <i class="fa fa-youtube-square fa-inverse" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li class="list-inline-item">
+                    <a href="" target="_blank">
+                        <i class="fa fa-twitter-square  fa-inverse" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li class="list-inline-item">
+                    <a href="" target="_blank">
+                        <i class="fa fa-facebook-square fa-inverse" aria-hidden="true"></i>
+                    </a>
+                </li>
             </ul>
         </div>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    </div>
+               
+            
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/jquery.leanModal.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/script.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
 
-</body>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+        crossorigin="anonymous"></script>
+
+    </body>
 
 </html>
