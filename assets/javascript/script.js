@@ -1,5 +1,5 @@
 
-//
+var yelp = {};
 $(document).ready(function () {
 
     jQuery.ajaxPrefilter(function (options) {
@@ -8,12 +8,13 @@ $(document).ready(function () {
         }
     });
 
-    var yelp = {
+    yelp = {
 	    params: {
 	        term: "brewery",
 	        sort_by: "distance",
 	        longitude: -117.161084,
 	        latitude: 32.715738,
+            limit: 10
 	    },
 
 	    getBreweries: function(output) {
@@ -37,22 +38,39 @@ $(document).ready(function () {
 		    }).done(function (response) {
 		        console.log('cors-anywhere response')
 		        console.log(response);
+                output.empty();
 		        for (var i = 0; i < response.businesses.length; i++) {
-		        	var newBrewery = $("<div>").addClass("brewery");
-		        	var name = $("<h1>").html(response.businesses[i].name);
-		        	var distance = $("<p>").html(response.businesses[i].distance);
-		        	var address = $("<p>").html(response.businesses[i].location.display_address);
-		        	$(newBrewery).append(name).append(distance).append(address);
+                    var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
+		        	var newBrewery = `
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">${response.businesses[i].name}</div>
+                            <div class="card-body">
+                                <div class="card-title">${response.businesses[i].name}</div>
+                                <div class="card-text">
+                                    <p>${distance} mi. away</p>
+
+                                   <p>${response.businesses[i].location.display_address.join("<br>")}</p>
+                 
+                                  </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <a href="#" class="btn btn-success">Click Me For More Info</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    `   	
 		        	output.append(newBrewery);
 		        }
 		        // $("#output1").html(JSON.stringify(response));
 		    })
-
 	    }
 	}
 
 	$("#get").on("click", function(){
-		yelp.getBreweries( $("#output1") );
+		yelp.getBreweries( $("#breweries") );
 	});
 
 })
@@ -123,6 +141,11 @@ function geoFindMe() {
         var longitude = position.coords.longitude;
         console.log(latitude);
         console.log(longitude);
+
+        yelp.params.latitude = latitude;
+        yelp.params.longitude = longitude;
+        //pass in the html element to populate the breweries
+        yelp.getBreweries( $("#breweries") );
         
         //Add function that calls yelp api
         return {
