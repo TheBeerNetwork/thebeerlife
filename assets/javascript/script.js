@@ -53,7 +53,7 @@ $("#submit").on("click" , function(e){
 
 // Culture Brewing CoXXX
 
-// Pizza Port
-// Rip Current
-// Thorn St Brewery
-// Mason Ale Works
+// Pizza PortXX
+// Rip CurrentXX
+// Thorn St BreweryXX
+// Mason Ale WorksXX
