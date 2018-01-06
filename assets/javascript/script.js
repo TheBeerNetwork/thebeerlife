@@ -88,8 +88,7 @@ $(document).ready(function () {
                             database.ref("Breweries-Test").child(ID).update({
                                 name: response.businesses[i].name,
                                 address: response.businesses[i].location,
-                                website: "unknown",
-                                beers: ["","","","",""],
+                               
                             })
                         };
                     }); // end database function
