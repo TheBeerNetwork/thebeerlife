@@ -221,15 +221,22 @@ a.btn_red {
 
 .card {
 	height: 100%;
-	background-color:#a47c48;
+	
 	margin: 10px 5px;
 	padding:5px;
 	
 }
 .card-footer {
-	background-color:#a47c48;
+	background-color:#753522;
 
 
 }
+.card-header {
+	background-color:#a47c48;
 
-url("../assets/images/crystaldetail.jpg");
+}
+.card-body {
+	background-color:#f7f1cf;
+
+}
+
