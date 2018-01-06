@@ -105,15 +105,20 @@ $(document).ready(function () {
                         open = "<p style='color:red'>closed</p>";
                     }
                 }
+                let lat = response.coordinates.latitude;
+                let long = response.coordinates.longitude;
 
+                 var myLatlng = {lat, long};
+                               
                 
                 var name = response.name;
                 var modalContent = `
                     
                     <h2>${response.name}</h2>
                     ${open}
-               
+                                 
                 `
+                
                 $("#more-info").append(modalContent);
 
            
@@ -136,21 +141,14 @@ $(document).ready(function () {
 
 /*google maps api key AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
-<<<<<<< HEAD
-*/
- 
-=======
 
 
-[9: 10]
-Authorization: Bearer < YOUR ACCESS TOKEN >*/
 
->>>>>>> master
 //google sign in 
 //var provider = new firebase.auth.GoogleAuthProvider();
 //AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38
 // let key = "AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38";
-// let queryURL = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + key;
+// let queryURL = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + key;*/
 
 $(window).on("load", function () {
 
@@ -210,35 +208,18 @@ function geoFindMe() {
         yelp.params.latitude = latitude;
         yelp.params.longitude = longitude;
         //pass in the html element to populate the breweries
-<<<<<<< HEAD
         yelp.getBreweries( $("#breweries") );
                 
-=======
-        yelp.getBreweries($("#breweries"));
-
-        //Add function that calls yelp api
->>>>>>> master
         return {
             latitude: latitude,
             longitude: longitude
         };
-<<<<<<< HEAD
     }   
     function error() {
         output.innerHTML = "Unable to retrieve your location";
     }
     return navigator.geolocation.getCurrentPosition(success, error);    
 } 
-=======
-    }
-
-    function error() {
-        output.innerHTML = "Unable to retrieve your location";
-    }
-    return navigator.geolocation.getCurrentPosition(success, error);
-
-}
->>>>>>> master
 // Initialize Firebase
 var config = {
     apiKey: "AIzaSyCgDQjadv4eM2WAjcqro9rxdiGdPAhoGV4",
@@ -269,11 +250,7 @@ $("#login").on("click", function (e) {
     e.preventDefault();
     let email = $("#email").val().trim();
     let password = $("#password").val().trim();
-<<<<<<< HEAD
        
-=======
-
->>>>>>> master
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
@@ -369,7 +346,7 @@ $(".fb").on("click", function () {
 //     checkEmail(email);
 // });
 
-// //display google map with geolocation
+//display google map with geolocation
 // var map, infoWindow;
 
 // function initMap() {
