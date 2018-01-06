@@ -1,4 +1,3 @@
-
 var yelp = {};
 $(document).ready(function () {
 
@@ -9,39 +8,40 @@ $(document).ready(function () {
     });
 
     yelp = {
-	    params: {
-	        term: "brewery",
-	        sort_by: "distance",
-	        longitude: -117.161084,
-	        latitude: 32.715738,
+        params: {
+            term: "brewery",
+            sort_by: "distance",
+            longitude: -117.161084,
+            latitude: 32.715738,
             limit: 10
-	    },
+        },
 
-	    getBreweries: function(output) {
-	    	var location = $("#location").val();
-	    	if (location) {
-	    		console.log(location);
-	    		this.params.location = location;
-	    		this.params.latitude = '';
-	    		this.params.longitude = '';
-	    	}
+        getBreweries: function (output) {
+            var location = $("#location").val();
+            $("#location").val('');
+            if (location) {
+                console.log(location);
+                this.params.location = location;
+                this.params.latitude = '';
+                this.params.longitude = '';
+            }
 
-		    var queryURL = "https://api.yelp.com/v3/businesses/search";
-		    queryURL += '?' + $.param(this.params);
-		    $.ajaxSetup({
-		        headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
-		    });
-		    $.ajax({
-		        url: queryURL,
-		        method: "GET",
-		        // Authorization: "Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx",
-		    }).done(function (response) {
-		        console.log('cors-anywhere response')
-		        console.log(response);
+            var queryURL = "https://api.yelp.com/v3/businesses/search";
+            queryURL += '?' + $.param(this.params);
+            $.ajaxSetup({
+                headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+            });
+            $.ajax({
+                url: queryURL,
+                method: "GET",
+                // Authorization: "Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx",
+            }).done(function (response) {
+                console.log('cors-anywhere response')
+                console.log(response);
                 output.empty();
-		        for (var i = 0; i < response.businesses.length; i++) {
+                for (var i = 0; i < response.businesses.length; i++) {
                     var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
-		        	var newBrewery = `
+                    var newBrewery = `
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">${response.businesses[i].name}</div>
@@ -51,48 +51,115 @@ $(document).ready(function () {
                                     <p>${distance} mi. away</p>
 
                                    <p>${response.businesses[i].location.display_address.join("<br>")}</p>
+                                   <p>Yelp Rating: ${response.businesses[i].rating}</p>
                  
                                   </div>
                             </div>
 
                             <div class="card-footer">
-                                <a href="#" class="btn btn-success">Click Me For More Info</a>
+                                <a href="#more-info-modal" class="btn btn-success more modal_trigger_more" data-id="${response.businesses[i].id}">Click Me For More Info</a>
                             </div>
 
                         </div>
                     </div>
-                    `   	
-		        	output.append(newBrewery);
-		        }
-		        // $("#output1").html(JSON.stringify(response));
-		    })
-	    }
-	}
+                    `
+                    output.append(newBrewery);
+                    $(".modal_trigger_more").leanModal({
+                        top: 100,
+                        overlay: 0.6,
+                        closeButton: ".modal_close"
+                    });
+                        
+                    // getModalInfo()
+                 
+                }
+                // $("#output1").html(JSON.stringify(response));
+            })
+        },
+        getModalInfo: function(id) {
+            console.log(id);
+            var params = {
+                id: id,
+            }
 
-	$("#get").on("click", function(){
-		yelp.getBreweries( $("#breweries") );
-	});
+            var queryURL = "https://api.yelp.com/v3/businesses/";
+            queryURL += params.id;
+
+            $.ajaxSetup({
+                headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+            });
+            $.ajax({
+                url: queryURL,
+                method: "GET",
+               
+            }).done(function (response) {
+               
+                console.log(response);
+                $("#more-info").empty();
+                $(".header_title").html(response.name);
+                var open = "";
+                if (response.hours) {
+                    if (response.hours[0].is_open_now && response.hours[0].is_open_now === true) {
+                        open = "<p style='color:green'>open</p";
+                    } else {
+                        open = "<p style='color:red'>closed</p>";
+                    }
+                }
+
+                
+                var name = response.name;
+                var modalContent = `
+                    
+                    <h2>${response.name}</h2>
+                    ${open}
+               
+                `
+                $("#more-info").append(modalContent);
+
+           
+                   
+            })
+        }
+    }
+
+    $("#get").on("click", function () {
+        yelp.getBreweries($("#breweries"));
+    });
+    $(document).on("click", ".more", function () {
+        $(".header_title").html("Loading...")
+        $("#more-info").html("Loading...");
+        yelp.getModalInfo($(this).data("id"));
+    });
+
 
 })
 
-
-
 /*google maps api key AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
+<<<<<<< HEAD
 */
  
+=======
+
+
+[9: 10]
+Authorization: Bearer < YOUR ACCESS TOKEN >*/
+
+>>>>>>> master
 //google sign in 
 //var provider = new firebase.auth.GoogleAuthProvider();
 //AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38
 // let key = "AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38";
 // let queryURL = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + key;
 
-$(window).on("load" , function(){
-   
-geoFindMe();
-//console.log(geoFindMe()); 
-   
+$(window).on("load", function () {
+
+    geoFindMe();
+    //console.log(geoFindMe()); 
+
 });
+
+$("#nearme").on("click", geoFindMe);
 
 // Creates a modal for user login
 $("#modal_trigger").leanModal({
@@ -100,6 +167,7 @@ $("#modal_trigger").leanModal({
     overlay: 0.6,
     closeButton: ".modal_close"
 });
+
 
 $(function () {
     // Calling Login Form
@@ -142,18 +210,35 @@ function geoFindMe() {
         yelp.params.latitude = latitude;
         yelp.params.longitude = longitude;
         //pass in the html element to populate the breweries
+<<<<<<< HEAD
         yelp.getBreweries( $("#breweries") );
                 
+=======
+        yelp.getBreweries($("#breweries"));
+
+        //Add function that calls yelp api
+>>>>>>> master
         return {
             latitude: latitude,
             longitude: longitude
         };
+<<<<<<< HEAD
     }   
     function error() {
         output.innerHTML = "Unable to retrieve your location";
     }
     return navigator.geolocation.getCurrentPosition(success, error);    
 } 
+=======
+    }
+
+    function error() {
+        output.innerHTML = "Unable to retrieve your location";
+    }
+    return navigator.geolocation.getCurrentPosition(success, error);
+
+}
+>>>>>>> master
 // Initialize Firebase
 var config = {
     apiKey: "AIzaSyCgDQjadv4eM2WAjcqro9rxdiGdPAhoGV4",
@@ -166,7 +251,7 @@ var config = {
 firebase.initializeApp(config);
 
 //register new user with email and password including full name
-$("#register").on("click", function(e){
+$("#register").on("click", function (e) {
     e.preventDefault();
     let name = $("#name").val().trim();
     let email = $("#mailReg").val().trim();
@@ -176,15 +261,19 @@ $("#register").on("click", function(e){
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
-    });   
+    });
 
 });
 //login existing user with email and password
-$("#login").on("click", function(e){
+$("#login").on("click", function (e) {
     e.preventDefault();
     let email = $("#email").val().trim();
     let password = $("#password").val().trim();
+<<<<<<< HEAD
        
+=======
+
+>>>>>>> master
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
@@ -193,21 +282,21 @@ $("#login").on("click", function(e){
 })
 //Real time authentication listener
 firebase.auth().onAuthStateChanged(user => {
-    if(user){
+    if (user) {
         console.log(user);
         console.log("logged in");
-    }else{
+    } else {
         console.log("not logged in");
     }
 });
 //Sign out button for user
-$("#signOut").on("click", function(){
+$("#signOut").on("click", function () {
     firebase.auth().signOut();
 });
 //Firebase google login authentication
 let provider = new firebase.auth.GoogleAuthProvider();
 
-function googleSignIn(){
+function googleSignIn() {
     firebase.auth().signInWithPopup(provider).then(function (result) {
         // This gives you a Google Access Token. You can use it to access the Google API.
         var token = result.credential.accessToken;
@@ -223,7 +312,7 @@ function googleSignIn(){
         var email = error.email;
         // The firebase.auth.AuthCredential type that was used.
         var credential = error.credential;
-        console.log (errorCode);
+        console.log(errorCode);
         // ...
     });
 }
@@ -252,12 +341,12 @@ function facebookSignIn(){
     });
 }
 //Google event button
-$(".google").on("click",function(){
+$(".google").on("click", function () {
     googleSignIn();
     console.log("working");
 });
 //Facebook event button
-$(".fb").on("click", function(){
+$(".fb").on("click", function () {
     facebookSignIn();
     console.log("working");
 });
@@ -265,7 +354,6 @@ $(".fb").on("click", function(){
 // var email = document.getElementById('email');
 
 // function checkEmail(email) {
-
 
 //     var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
@@ -321,5 +409,4 @@ $(".fb").on("click", function(){
 //         'Error: The Geolocation service failed.' :
 //         'Error: Your browser doesn\'t support geolocation.');
 //     infoWindow.open(map);
-// } 
-
+// }
