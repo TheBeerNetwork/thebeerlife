@@ -1,3 +1,5 @@
+
+var breweries;
 var yelp = {};
 $(document).ready(function () {
 
@@ -57,7 +59,7 @@ $(document).ready(function () {
                             </div>
 
                             <div class="card-footer">
-                                <a href="#more-info-modal" class="btn btn-success more modal_trigger_more" data-id="${response.businesses[i].id}">Click Me For More Info</a>
+                                <a href="#more-info-modal" class="btn btn-success more modal_trigger_more" data-id="${response.businesses[i].id}">More Info</a>
                             </div>
 
                         </div>
@@ -69,14 +71,35 @@ $(document).ready(function () {
                         overlay: 0.6,
                         closeButton: ".modal_close"
                     });
-                        
-                    // getModalInfo()
+                       
+                    // add it to the database 
+                    var ID = response.businesses[i].id;
+                    database.ref("Breweries-Test").once('value', function(snapshot) {
+                        if (!snapshot.hasChild(ID)) {
+                            database.ref("Breweries-Test").child(ID).set({
+                                name: response.businesses[i].name,
+                                address: response.businesses[i].location,
+                                website: "unknown",
+                                beers: ["","","","",""],
+                            })
+                        }
+                        else {
+                            // alert("already exists"),
+                            database.ref("Breweries-Test").child(ID).update({
+                                name: response.businesses[i].name,
+                                address: response.businesses[i].location,
+                               
+                            })
+                        };
+                    }); // end database function
                  
-                }
+                } //end for loop
+
                 // $("#output1").html(JSON.stringify(response));
             })
         },
         getModalInfo: function(id) {
+
             console.log(id);
             var params = {
                 id: id,
@@ -118,12 +141,12 @@ $(document).ready(function () {
                     ${open}
                                  
                 `
-                
                 $("#more-info").append(modalContent);
-
-           
-                   
             })
+
+            console.log(breweries[id]);
+
+            $("#more-info").append(breweries[id].address.display_address.join("<br>"));
         }
     }
 
@@ -133,16 +156,15 @@ $(document).ready(function () {
     $(document).on("click", ".more", function () {
         $(".header_title").html("Loading...")
         $("#more-info").html("Loading...");
+        
         yelp.getModalInfo($(this).data("id"));
-    });
 
+    });
 
 })
 
 /*google maps api key AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
-
-
 
 //google sign in 
 //var provider = new firebase.auth.GoogleAuthProvider();
@@ -151,12 +173,11 @@ yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW
 // let queryURL = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + key;*/
 
 $(window).on("load", function () {
-
     geoFindMe();
     //console.log(geoFindMe()); 
-
 });
 
+// will request access to location again and run the geolocator
 $("#nearme").on("click", geoFindMe);
 
 // Creates a modal for user login
@@ -230,6 +251,8 @@ var config = {
     messagingSenderId: "1057299715949"
 };
 firebase.initializeApp(config);
+
+var database = firebase.database();
 
 //register new user with email and password including full name
 $("#register").on("click", function (e) {
@@ -326,6 +349,11 @@ $(".google").on("click", function () {
 $(".fb").on("click", function () {
     facebookSignIn();
     console.log("working");
+});
+
+
+database.ref("Breweries-Test").on("value", function(snapshot) {
+    breweries = snapshot.val();
 });
 
 // var email = document.getElementById('email');
