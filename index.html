@@ -16,41 +16,26 @@
           href="assets/css/style.css">
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
 
-</head>
+    </head>
+    <body>
 
-<body>
-    <nav class="navbar navbar-expand-md nabar-light"
-         style="background-color:#ffd328">
-        <button type="button"
-                data-toggle="collapse"
-                data-target="#brewNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-around"
-             id="brewNav">
-            <ul class="navbar-nav">
+        <nav class="navbar navbar-expand-md nabar-light" style="background-color:#ffd328">
+            <div data-toggle="collapse" data-target="#brewNav">
+                <img src="assets/css/brewMasters.png" alt="BrewMasters" width="120" height="100">                
+            </div>
+            <div class="collapse navbar-collapse justify-content-around" id="brewNav">
+                <ul class="navbar-nav">
                 <li class="nav-item">
                     <a href="index.html"
                        class="nav-link">Home</a>
+                </li>                           
+                <li class="nav-item" id="brewNav">
+                    <a href="list.html" class="nav-link">List</a>
                 </li>
-                <li class="nav-item">
-                    <a href="about.html"
-                       class="nav-link">About</a>
-                </li>
-                <li class="nav-item">
-                    <a href="location.html"
-                       class="nav-link">Location</a>
-                </li>
-                <li class="nav-item"
-                    id="brewNav">
-                    <a href="list.html"
-                       class="nav-link">List</a>
-                </li>
-                <li class="nav-item"
-                    id="brewNav">
-                    <a id="modal_trigger"
-                       href="#modal"
-                       class="nav-link">Login</a>
+
+                <li class="nav-item" >
+                    <a id="modal_trigger" href="#modal" class="nav-link">Login</a>
+
                 </li>
                 <li class="nav-item"
                     id="brewNav">
@@ -112,12 +97,7 @@
                             <label>Password</label>
                             <input type="password"
                                    id="password">
-                            <br>
-                            <div class="checkbox">
-                                <input id="remember"
-                                       type="checkbox" />
-                                <label for="remember">Remember me on this computer</label>
-                            </div>
+                            <br>                           
                             <div class="action_btns">
                                 <div class="one_half">
                                     <a href="#"
@@ -131,8 +111,8 @@
                                 </div>
                             </div>
                         </form>
-                        <a href="#"
-                           class="forgot_password">Forgot password?</a>
+                        <!-- <a href="#"
+                           class="forgot_password">Forgot password?</a> -->
                     </div>
                     <!-- Register Form -->
                     <div class="user_register">
@@ -149,11 +129,11 @@
                             <input type="password"
                                    id="passwordReg">
                             <br>
-                            <div class="checkbox">
+                            <!-- <div class="checkbox">
                                 <input id="send_updates"
                                        type="checkbox" />
                                 <label for="send_updates">Send me occasional email updates</label>
-                            </div>
+                            </div> -->
                             <div class="action_btns">
                                 <div class="one_half">
                                     <a href="#"
@@ -210,16 +190,15 @@
                         <div class="carousel-inner">
 
                             <div class="carousel-item active">
-                                <img class="w-100 d-block"
-                                     src="http://placehold.it/1200x400/ff0000/440000">
+
+                                <img class="w-100 d-block" src="./assets/images/mikehessweb.jpg">
                             </div>
                             <div class="carousel-item">
-                                <img class="w-100 d-block"
-                                     src="http://placehold.it/1200x400/00ff00/ffffff">
+                                <img class="w-100 d-block" src="./assets/images/cultureweb.jpg">
                             </div>
                             <div class="carousel-item">
-                                <img class="w-100 d-block"
-                                     src="http://placehold.it/1200x400/0000ff/ffffff">
+                                <img class="w-100 d-block" src="./assets/images/northpark.jpg">
+
                             </div>
 
                         </div>
@@ -342,21 +321,14 @@
         </footer>
     </div>
 
-    <script src="https://apis.google.com/js/platform.js"
-            async
-            defer></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript"
-            src="assets/javascript/jquery.leanModal.min.js"></script>
-    <script type="text/javascript"
-            src="assets/javascript/script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM"></script>
+    <script src="https://apis.google.com/js/platform.js"async defer></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/jquery.leanModal.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
             crossorigin="anonymous"></script>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
-            integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
             crossorigin="anonymous"></script>
 
 </body>
