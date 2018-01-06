@@ -64,8 +64,60 @@ $(document).ready(function () {
                     </div>
                     `
                     output.append(newBrewery);
+                    $(".modal_trigger_more").leanModal({
+                        top: 100,
+                        overlay: 0.6,
+                        closeButton: ".modal_close"
+                    });
+                        
+                    // getModalInfo()
+                 
                 }
                 // $("#output1").html(JSON.stringify(response));
+            })
+        },
+        getModalInfo: function(id) {
+            console.log(id);
+            var params = {
+                id: id,
+            }
+
+            var queryURL = "https://api.yelp.com/v3/businesses/";
+            queryURL += params.id;
+
+            $.ajaxSetup({
+                headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+            });
+            $.ajax({
+                url: queryURL,
+                method: "GET",
+               
+            }).done(function (response) {
+               
+                console.log(response);
+                $("#more-info").empty();
+                $(".header_title").html(response.name);
+                var open = "";
+                if (response.hours) {
+                    if (response.hours[0].is_open_now && response.hours[0].is_open_now === true) {
+                        open = "<p style='color:green'>open</p";
+                    } else {
+                        open = "<p style='color:red'>closed</p>";
+                    }
+                }
+
+                
+                var name = response.name;
+                var modalContent = `
+                    
+                    <h2>${response.name}</h2>
+                    ${open}
+               
+                `
+                $("#more-info").append(modalContent);
+
+           
+                   
             })
         }
     }
@@ -74,8 +126,11 @@ $(document).ready(function () {
         yelp.getBreweries($("#breweries"));
     });
     $(document).on("click", ".more", function () {
-        console.log($(this).data("id"));
-    })
+        $(".header_title").html("Loading...")
+        $("#more-info").html("Loading...");
+        yelp.getModalInfo($(this).data("id"));
+    });
+
 
 })
 
@@ -107,15 +162,7 @@ $("#modal_trigger").leanModal({
     overlay: 0.6,
     closeButton: ".modal_close"
 });
-$(document).on("click", ".modal_trigger_more", function(){
-    $(".modal_trigger_more").leanModal({
-        top: 100,
-        overlay: 0.6,
-        closeButton: ".modal_close"
-    });
-    console.log($(this).data("id"));
-    getModalInfo()
-});
+
 
 $(function () {
     // Calling Login Form
