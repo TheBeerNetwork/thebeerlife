@@ -71,27 +71,52 @@ $(document).ready(function () {
                         overlay: 0.6,
                         closeButton: ".modal_close"
                     });
+                    
+                    var queryURL = "https://api.yelp.com/v3/businesses/";
+                    queryURL += response.businesses[i].id;
+
+                    $.ajaxSetup({
+                    headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+                    });
+                    $.ajax({
+                        url: queryURL,
+                        method: "GET",
                        
-                    // add it to the database 
-                    var ID = response.businesses[i].id;
-                    database.ref("Breweries-Test").once('value', function(snapshot) {
-                        if (!snapshot.hasChild(ID)) {
-                            database.ref("Breweries-Test").child(ID).set({
-                                name: response.businesses[i].name,
-                                address: response.businesses[i].location,
-                                website: "unknown",
-                                beers: ["","","","",""],
-                            })
-                        }
-                        else {
-                            // alert("already exists"),
-                            database.ref("Breweries-Test").child(ID).update({
-                                name: response.businesses[i].name,
-                                address: response.businesses[i].location,
-                               
-                            })
-                        };
-                    }); // end database function
+                    }).done(function (response) {
+                       
+                        console.log(response);
+                    
+                       
+                        // add it to the database 
+                        var thisBrewery = response;
+                        var ID = thisBrewery.id;
+                        database.ref("Breweries-Test").once('value', function(snapshot) {
+                            if (!snapshot.hasChild(ID)) {
+                                database.ref("Breweries-Test").child(ID).set({
+                                    name: thisBrewery.name,
+                                    address: thisBrewery.location,
+                                    distanceInMiles: distance,
+                                    phone: thisBrewery.phone,
+                                    price: thisBrewery.price,
+                                    coordinates: thisBrewery.coordinates,
+                                    hours: thisBrewery.hours,
+
+                                })
+                            }
+                            else {
+                                // alert("already exists"),
+                                database.ref("Breweries-Test").child(ID).update({
+                                    name: thisBrewery.name,
+                                    address: thisBrewery.location,
+                                    distanceInMiles: distance,
+                                    phone: thisBrewery.phone,
+                                    price: thisBrewery.price,
+                                    coordinates: thisBrewery.coordinates,
+                                    hours: thisBrewery.hours,
+                                })
+                            };
+                        }); // end database function
+                    });
                  
                 } //end for loop
 
