@@ -351,6 +351,12 @@ $(".fb").on("click", function () {
     console.log("working");
 });
 
+$("#comment").leanModal({
+    top: 100,
+    overlay: 0.6,
+    closeButton: ".modal_close"
+});
+
 
 database.ref("Breweries-Test").on("value", function(snapshot) {
     breweries = snapshot.val();
