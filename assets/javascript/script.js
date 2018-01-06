@@ -105,15 +105,20 @@ $(document).ready(function () {
                         open = "<p style='color:red'>closed</p>";
                     }
                 }
+                let lat = response.coordinates.latitude;
+                let long = response.coordinates.longitude;
 
+                 var myLatlng = {lat, long};
+                               
                 
                 var name = response.name;
                 var modalContent = `
                     
                     <h2>${response.name}</h2>
                     ${open}
-               
+                                 
                 `
+                
                 $("#more-info").append(modalContent);
 
            
@@ -138,14 +143,12 @@ $(document).ready(function () {
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
 
 
-[9: 10]
-Authorization: Bearer < YOUR ACCESS TOKEN >*/
 
 //google sign in 
 //var provider = new firebase.auth.GoogleAuthProvider();
 //AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38
 // let key = "AIzaSyD7R6PGFTofUCPGdujAByatqDsiu8TxN38";
-// let queryURL = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + key;
+// let queryURL = "https://www.googleapis.com/geolocation/v1/geolocate?key=" + key;*/
 
 $(window).on("load", function () {
 
@@ -205,21 +208,18 @@ function geoFindMe() {
         yelp.params.latitude = latitude;
         yelp.params.longitude = longitude;
         //pass in the html element to populate the breweries
-        yelp.getBreweries($("#breweries"));
-
-        //Add function that calls yelp api
+        yelp.getBreweries( $("#breweries") );
+                
         return {
             latitude: latitude,
             longitude: longitude
         };
-    }
-
+    }   
     function error() {
         output.innerHTML = "Unable to retrieve your location";
     }
-    return navigator.geolocation.getCurrentPosition(success, error);
-
-}
+    return navigator.geolocation.getCurrentPosition(success, error);    
+} 
 // Initialize Firebase
 var config = {
     apiKey: "AIzaSyCgDQjadv4eM2WAjcqro9rxdiGdPAhoGV4",
@@ -236,9 +236,8 @@ $("#register").on("click", function (e) {
     e.preventDefault();
     let name = $("#name").val().trim();
     let email = $("#mailReg").val().trim();
-    let password = $("#passwordReg").val().trim();
-    //check for real email
-
+    let password = $("#passwordReg").val().trim();  
+ 
     firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
@@ -251,7 +250,7 @@ $("#login").on("click", function (e) {
     e.preventDefault();
     let email = $("#email").val().trim();
     let password = $("#password").val().trim();
-
+       
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
@@ -294,6 +293,30 @@ function googleSignIn() {
         // ...
     });
 }
+//Facebook login authentication
+
+var fbprovider = new firebase.auth.FacebookAuthProvider();
+
+function facebookSignIn(){
+    firebase.auth().signInWithPopup(fbprovider).then(function (result) {
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        console.log(user);
+        // ...
+    }).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+        console.log(errorCode);
+    });
+}
 //Google event button
 $(".google").on("click", function () {
     googleSignIn();
@@ -323,7 +346,7 @@ $(".fb").on("click", function () {
 //     checkEmail(email);
 // });
 
-// //display google map with geolocation
+//display google map with geolocation
 // var map, infoWindow;
 
 // function initMap() {
