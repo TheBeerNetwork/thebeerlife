@@ -10,7 +10,9 @@ h1 {
     margin-bottom: 0;
     margin-top: 60px;
 }
-
+.bold {
+    font-weight: 600;
+}
 
 /* CSS for login modal */
 #lean_overlay {
@@ -267,4 +269,20 @@ a.btn_red {
     vertical-align: middle; /* align the text vertically centered */
 }
 
+
+#more-info-modal {
+    width: 500px;
+    max-width: 95%;
+    max-height: 75vh;
+    overflow: scroll;
+/*    margin-left: 50% !important;
+    transform: translate(-50%,0);*/
+}
+.hours {
+    font-size: 14px;
+    line-height: 16px;
+}
+.hours p {
+    font-size: 16px;
+    margin-bottom: 3px;
 }
