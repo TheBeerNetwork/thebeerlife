@@ -121,27 +121,48 @@ $(document).ready(function () {
                 $("#more-info").empty();
                 $(".header_title").html(response.name);
                 var open = "";
+                let phone = response.display_phone;
+                let lat = response.coordinates.latitude;
+                let long = response.coordinates.longitude;
+                let mapDisp = '<div class="map-modal"> <div id="map_canvas" style="width:auto; height: 300px;"></div> </div>'
+
                 if (response.hours) {
                     if (response.hours[0].is_open_now && response.hours[0].is_open_now === true) {
                         open = "<p style='color:green'>open</p";
                     } else {
                         open = "<p style='color:red'>closed</p>";
                     }
-                }
-                let lat = response.coordinates.latitude;
-                let long = response.coordinates.longitude;
+                }               
 
-                 var myLatlng = {lat, long};
-                               
+                let myLatlng = {lat, long};
+
+                function initializeMap() {
+                    var mapOptions = {
+                        center: new google.maps.LatLng(lat, long),
+                        zoom: 15,
+                        mapTypeId: google.maps.MapTypeId.HYBRID
+                    };
+                    var map = new google.maps.Map(document.getElementById("map_canvas"),
+                        mapOptions);
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(lat, long)
+                    });
+                    marker.setMap(map);
+                }
                 
                 var name = response.name;
                 var modalContent = `
                     
                     <h2>${response.name}</h2>
                     ${open}
-                                 
+                    ${"<h4> Phone #: "+ phone + "</h4>"}
+                    ${mapDisp}
+                                                  
                 `
+                
                 $("#more-info").append(modalContent);
+                return initializeMap();
+                
             })
 
             console.log(breweries[id]);
@@ -158,7 +179,9 @@ $(document).ready(function () {
         $("#more-info").html("Loading...");
         
         yelp.getModalInfo($(this).data("id"));
-
+        
+    }).on('shown.bs.modal', function () {
+        initializeMap();
     });
 
 })
@@ -284,6 +307,24 @@ $("#login").on("click", function (e) {
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
         console.log(user);
+        let userID = user.uid;
+        //input comment information and send to firebase
+        $("#submitComment").on("click", function (e) {
+            e.preventDefault();
+            let review = $("#review").val();
+            let favBeer = $("#favBeer").val();
+            let brewName = $("#brewName").val();
+            let commentRev = review;
+            let commentBeer = favBeer;
+            let commentBrew = brewName;
+
+            database.ref("Comments").child(userID).set({
+                brewName: commentBrew,
+                favBeer: commentBeer,
+                review: commentRev,
+            });
+            $("#comment-modal").hide();
+        });
         console.log("logged in");
     } else {
         console.log("not logged in");
@@ -350,7 +391,12 @@ $(".fb").on("click", function () {
     facebookSignIn();
     console.log("working");
 });
-
+//comment Btn modal display
+$("#commentBtn").leanModal({
+    top: 100,
+    overlay: 0.6,
+    closeButton: ".modal_close",    
+});
 
 database.ref("Breweries-Test").on("value", function(snapshot) {
     breweries = snapshot.val();
@@ -374,44 +420,3 @@ database.ref("Breweries-Test").on("value", function(snapshot) {
 //     checkEmail(email);
 // });
 
-//display google map with geolocation
-// var map, infoWindow;
-
-// function initMap() {
-//     map = new google.maps.Map(document.getElementById('map'), {
-//         center: {
-//             lat: -34.397,
-//             lng: 150.644
-//         },
-//         zoom: 6
-//     });
-//     infoWindow = new google.maps.InfoWindow;
-
-//     // Try HTML5 geolocation.
-//     if (navigator.geolocation) {
-//         navigator.geolocation.getCurrentPosition(function (position) {
-//             var pos = {
-//                 lat: position.coords.latitude,
-//                 lng: position.coords.longitude
-//             };
-
-//             infoWindow.setPosition(pos);
-//             infoWindow.setContent('Location found.');
-//             infoWindow.open(map);
-//             map.setCenter(pos);
-//         }, function () {
-//             handleLocationError(true, infoWindow, map.getCenter());
-//         });
-//     } else {
-//         // Browser doesn't support Geolocation
-//         handleLocationError(false, infoWindow, map.getCenter());
-//     }
-// }
-
-// function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-//     infoWindow.setPosition(pos);
-//     infoWindow.setContent(browserHasGeolocation ?
-//         'Error: The Geolocation service failed.' :
-//         'Error: Your browser doesn\'t support geolocation.');
-//     infoWindow.open(map);
-// }
