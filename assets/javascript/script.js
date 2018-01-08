@@ -391,22 +391,13 @@ $(".fb").on("click", function () {
     facebookSignIn();
     console.log("working");
 });
-<<<<<<< HEAD
 
-$("#comment").leanModal({
+$("#commentBtn").leanModal({
     top: 100,
     overlay: 0.6,
     closeButton: ".modal_close"
 });
 
-=======
-//comment Btn modal display
-$("#commentBtn").leanModal({
-    top: 100,
-    overlay: 0.6,
-    closeButton: ".modal_close",    
-});
->>>>>>> master
 
 database.ref("Breweries-Test").on("value", function(snapshot) {
     breweries = snapshot.val();
