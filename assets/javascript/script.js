@@ -188,6 +188,7 @@ var yelp = {};
         $(".hours").empty();
         $(".beers").html("<p class='bold'>Top Beers</p>");
         $(".map-modal").empty();
+        $(".phone").empty();
 
         // get the brewery form the last snapshot of firebase
         var thisBrewery = brewerySnapshot[id];
@@ -276,6 +277,7 @@ var yelp = {};
         $(".distance").append(thisBrewery.distanceInMiles + " miles");
         $(".header_title").html(name);
         $(".address").append(thisBrewery.location.display_address.join("<br>"));
+        $(".phone").append("<a href='tel:" + thisBrewery.phone + "'> Call Us: " + thisBrewery.phone + "</a>");
 
        $(".map-modal").append(mapDisp);
 
