@@ -1,8 +1,8 @@
 
 body {
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: 14px;
-    color: blue;
+    font-size: 16px;
+    color: black;
 	  background-color: #b3cde0;
 }
 h1 {
@@ -10,7 +10,9 @@ h1 {
     margin-bottom: 0;
     margin-top: 60px;
 }
-
+.bold {
+    font-weight: 600;
+}
 
 /* CSS for login modal */
 #lean_overlay {
@@ -249,4 +251,36 @@ a.btn_red {
 	background-color:#f7f1cf;
 
 }
+.navbar-nav > li{
+  padding-left:30px;
+  padding-right:30px;
+}
+.btn.btn-primary{
+    background-image: url(../images/beerbuttonimage2.jpg); /* 16px x 16px */
+    background-color: transparent; /* ./assets/images/northpark.jpgmake the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 110px;  
+    width: 190px;         /* make this the size of your image */
+    padding-left: 16px; 
+    padding-top: 25px;    /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+}
 
+
+#more-info-modal {
+    width: 500px;
+    max-width: 95%;
+/*    margin-left: 50% !important;
+    transform: translate(-50%,0);*/
+}
+.hours {
+    font-size: 14px;
+    line-height: 16px;
+}
+.hours p {
+    font-size: 16px;
+    margin-bottom: 3px;
+}

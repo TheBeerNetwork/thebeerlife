@@ -19,7 +19,9 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-md nabar-light" style="background-color:#ffd328">
+
+        <nav class="navbar navbar-expand-md navbar-light" style="background-color:#cfa83c">
+
             <div data-toggle="collapse" data-target="#brewNav">
                 <img src="assets/css/brewMasters.png" alt="BrewMasters" width="120" height="100">                
             </div>
@@ -162,8 +164,19 @@
                     </span>
                 </header>
 
-                <div id="more-info">
-                    <h1>Loading...</h1>
+                <div id="more-info" class="p-4">
+                    <p class="open bold"></p>
+                    <p class="distance"></p>
+                    <p class="address"></p>
+                    <div class="hours">
+                        
+                    </div>
+
+                    <div class="beers mt-3">
+                
+                    </div>
+                    
+                     
                 </div>
         </div>
 
@@ -207,9 +220,9 @@
                 <div class="col-md-4 ">
                     <div class="h2">Brewmaster List</div>
 
-                    <p>Here is a collection of most of the Breweries and Gastropubs in San Diego. Please hit the link below to submit your own reviews, and photos.</p>
+                    <p>Search for a local breweries and gastropubs. Please hit the link below to submit your own reviews and experiences.</p>
                     <a href="#"
-                       class="btn btn-primary">Submit Info</a>
+                       class="btn btn-primary"><h2>Submit Info</h2></a>
                 </div>
             </div>
             <hr>
@@ -229,63 +242,10 @@
             </div>
             <div class="row mt-2"
                  id="breweries">
+                 <p class="m-auto py-5">Nothing to see here. Show us your location or do a search to find breweries!</p>
 
-                <div class="col-md-4 ">
-                    <div class="card">
-                        <div class="card-header">Brewery #1</div>
-                        <div class="card-body">
-                            <div class="card-title">Brewery #1</div>
-                            <div class="card-text">Name of Brewery
-                                <br>Location
-                                <br> Rating
-                                <br> </div>
-                        </div>
-
-                        <div class="card-footer">
-                            <a href="#"
-                               class="btn btn-success">Click Me For More Info</a>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-md-4 ">
-                    <div class="card">
-                        <div class="card-header">Brewery #2</div>
-                        <div class="card-body">
-                            <div class="card-title">Brewery #2</div>
-                            <div class="card-text">Name of Brewery
-                                <br>Location
-                                <br> Rating
-                                <br>
-                            </div>
-                        </div>
-
-                        <div class="card-footer">
-                            <a href="#"
-                               class="btn btn-success">Click Me For More Info</a>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-md-4 ">
-                    <div class="card">
-                        <div class="card-header">Brewery #3</div>
-                        <div class="card-body">
-                            <div class="card-title">Brewery #3</div>
-                            <div class="card-text">Name of Brewery
-                                <br>Location
-                                <br> Rating
-                                <br>
-                            </div>
-                        </div>
-
-                        <div class="card-footer">
-                            <a href="#"
-                               class="btn btn-success">Click Me For More Info</a>
-                        </div>
-
-                    </div>
-                </div>
+                
+             
             </div>
         </div>
 
@@ -326,6 +286,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="assets/javascript/jquery.leanModal.min.js"></script>
     <script type="text/javascript" src="assets/javascript/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
             crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
