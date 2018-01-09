@@ -337,16 +337,23 @@ var yelp = {};
 
     });
 
-$(window).on("scroll", function () {
-    var scrollHeight = $(document).height();
-    var scrollPosition = $(window).height() + $(window).scrollTop();
-    if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
-        // when scroll to bottom of the page
-        yelp.params.offset += 12;
-        yelp.getBreweries($("#breweries"));
-        console.log("working");
-    }
-});
+    $(window).scroll(function () {
+        if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+            // ajax call get data from server and append to the div
+                    console.log("working");
+
+        }
+    });
+// $(window).on("scroll", function () {
+//     var scrollHeight = $(document).height();
+//     var scrollPosition = $(window).height() + $(window).scrollTop();
+//     if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+//         // when scroll to bottom of the page
+//         // yelp.params.offset += 12;
+//         // yelp.getBreweries($("#breweries"));
+//         console.log("working");
+//     }
+// });
 
 /*google maps api key AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
