@@ -97,9 +97,9 @@ var yelp = {};
                     };
 
                     var ID = thisBrewery.id;
-                    database.ref("Breweries-Test").once('value', function (snapshot) {
+                    database.ref("Breweries").once('value', function (snapshot) {
                         if (!snapshot.hasChild(ID)) {
-                            database.ref("Breweries-Test").child(ID).set({
+                            database.ref("Breweries").child(ID).set({
                                 name: name,
                                 location: location,
                                 distanceInMiles: distance,
@@ -110,7 +110,7 @@ var yelp = {};
                             })
                         } else {
                             // alert("already exists"),
-                            database.ref("Breweries-Test").child(ID).update({
+                            database.ref("Breweries").child(ID).update({
                                 name: name,
                                 location: location,
                                 distanceInMiles: distance,
@@ -145,7 +145,7 @@ var yelp = {};
 
                         var ID = thisBrewery.id;
 
-                        database.ref("Breweries-Test").child(ID).update({
+                        database.ref("Breweries").child(ID).update({
                             hours: hours,
                         })
 
@@ -182,8 +182,7 @@ var yelp = {};
         let lat = thisBrewery.coordinates.latitude;
         let long = thisBrewery.coordinates.longitude;
         let mapDisp = '<div id="map_canvas" style="width:auto; height: 300px;"></div>'        
-
-        let myLatlng = {lat, long};
+  
 
          function initializeMap() {
             var mapOptions = {
@@ -288,11 +287,11 @@ var yelp = {};
         for (var i = 1; i < 6; i++) {
             beers.push($("#beer" + i).val());
         }
-        database.ref("Breweries-Test").child(id).update({
+        database.ref("Breweries").child(id).update({
             beers: beers,
         });
     }
-
+    
     // click handlers
     
     // will request access to location again and run the geolocator
@@ -338,7 +337,7 @@ var yelp = {};
 
     });
 
-$(document).on("scroll", function () {
+$(window).on("scroll", function () {
     var scrollHeight = $(document).height();
     var scrollPosition = $(window).height() + $(window).scrollTop();
     if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
@@ -465,6 +464,7 @@ $("#login").on("click", function (e) {
         var errorCode = error.code;
         var errorMessage = error.message;
     });
+        
 })
 //Real time authentication listener
 firebase.auth().onAuthStateChanged(user => {
