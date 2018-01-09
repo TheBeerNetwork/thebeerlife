@@ -12,9 +12,8 @@ jQuery.ajaxPrefilter(function (options) {
 yelp = {
     params: {
         categories: "breweries",
-        // terms: "brewery",
         sort_by: "distance",
-        limit: 12,
+        limit: 3,
         offset: 0,
     },
 
@@ -320,7 +319,7 @@ function addComment(id) {
     var comment = $("#review").val();
     var drinking = $("#drinking").val();
 
-    database.ref("Breweries").child(id).child("comments").push().set({
+    database.ref("Breweriesfwor").child(id).child("comments").push().set({
         comment: comment,
         drinking: drinking,
         user: globalUser.email
@@ -409,9 +408,10 @@ $(window).on("scroll", function () {
     var scrollPosition = $(window).height() + $(window).scrollTop();
     if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
         // when scroll to bottom of the page
-        yelp.params.offset += 12;
+        yelp.params.offset += yelp.params.limit;
         yelp.getBreweries($("#breweries"));
         console.log("working");
+        console.log(yelp.params.offset);
     }
 });
 
