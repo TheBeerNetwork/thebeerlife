@@ -1,292 +1,344 @@
 var breweries;
 var yelp = {};
 
+var globalUser = "";
 
+jQuery.ajaxPrefilter(function (options) {
+    if (options.crossDomain && jQuery.support.cors) {
+        options.url = 'https://floating-dawn-43218.herokuapp.com/' + options.url;
+    }
+});
 
-    jQuery.ajaxPrefilter(function (options) {
-        if (options.crossDomain && jQuery.support.cors) {
-            options.url = 'https://floating-dawn-43218.herokuapp.com/' + options.url;
+yelp = {
+    params: {
+        categories: "breweries",
+        sort_by: "distance",
+        limit: 3,
+        offset: 0,
+    },
+
+    getBreweries: function (output, location) {
+        if (location) {
+            this.params.location = location;
+            this.params.latitude = '';
+            this.params.longitude = '';
         }
-    });
+        var queryURL = "https://api.yelp.com/v3/businesses/search";
+        queryURL += '?' + $.param(this.params);
+        $.ajaxSetup({
+            headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+        });
+        $.ajax({
+            url: queryURL,
+            method: "GET",
+            // Authorization: "Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx",
+        }).done(function (response) {
+            for (var i = 0; i < response.businesses.length; i++) {
+                var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
+                var newBrewery = `
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">${response.businesses[i].name}</div>
+                        <div class="card-body">
+                            <div class="card-title">${response.businesses[i].name}</div>
+                            <div class="card-text">
+                                <p>${distance} mi. away</p>
 
-    yelp = {
-        params: {
-            categories: "breweries",
-            // terms: "brewery",
-            sort_by: "distance",
-            limit: 10
-        },
-
-        getBreweries: function (output, location) {
-            if (location) {
-                this.params.location = location;
-                this.params.latitude = '';
-                this.params.longitude = '';
-            }
-
-            var queryURL = "https://api.yelp.com/v3/businesses/search";
-            queryURL += '?' + $.param(this.params);
-            $.ajaxSetup({
-                headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
-            });
-            $.ajax({
-                url: queryURL,
-                method: "GET",
-                // Authorization: "Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx",
-            }).done(function (response) {
-                output.empty();
-                for (var i = 0; i < response.businesses.length; i++) {
-                    var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
-                    var newBrewery = `
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">${response.businesses[i].name}</div>
-                            <div class="card-body">
-                                <div class="card-title">${response.businesses[i].name}</div>
-                                <div class="card-text">
-                                    <p>${distance} mi. away</p>
-
-                                   <p>${response.businesses[i].location.display_address.join("<br>")}</p>
-                                   <p>Yelp Rating: ${response.businesses[i].rating}</p>
-                 
-                                  </div>
-                            </div>
-
-                            <div class="card-footer">
-                                <a href="#more-info-modal" class="btn btn-success more modal_trigger_more" data-id="${response.businesses[i].id}">More Info</a>
-                            </div>
-
+                               <p>${response.businesses[i].location.display_address.join("<br>")}</p>
+                               <p>Yelp Rating: ${response.businesses[i].rating}</p>
+             
+                              </div>
                         </div>
+
+                        <div class="card-footer">
+                            <a href="#more-info-modal" class="btn btn-success more modal_trigger_more" data-id="${response.businesses[i].id}">More Info</a>
+                        </div>
+
                     </div>
-                    `
-                    output.append(newBrewery);
-                    $(".modal_trigger_more").leanModal({
-                        top: 100,
-                        overlay: 0.6,
-                        closeButton: ".modal_close"
-                    });
+                </div>
+                `
 
-                    // declare the variables
-                    var thisBrewery = response.businesses[i]
-                    var name = "";
-                    var location = [];
-                    var distanceInMiles = "Unlisted";
-                    var phone = "Unlisted";
-                    var price = "Unlisted";
-                    var coordinates = [];
+                output.append(newBrewery);
+                $(".modal_trigger_more").leanModal({
+                    top: 100,
+                    overlay: 0.6,
+                    closeButton: ".modal_close"
+                });
 
-                    //if the api returns a value, set the variable
-                    if (thisBrewery.name) {
-                        name = thisBrewery.name;
+                // declare the variables
+                var thisBrewery = response.businesses[i]
+                var name = "";
+                var location = [];
+                var distanceInMiles = "Unlisted";
+                var phone = "Unlisted";
+                var price = "Unlisted";
+                var coordinates = [];
+
+                //if the api returns a value, set the variable
+                if (thisBrewery.name) {
+                    name = thisBrewery.name;
+                };
+                if (thisBrewery.location) {
+                    location = thisBrewery.location;
+                };
+                if (thisBrewery.distance) {
+                    distanceInMiles = parseFloat(thisBrewery.distance * 0.00062137).toFixed(2);
+                };
+                if (thisBrewery.phone) {
+                    phone = thisBrewery.phone;
+                };
+                if (thisBrewery.price) {
+                    price = thisBrewery.price;
+                };
+                if (thisBrewery.coordinates) {
+                    coordinates = thisBrewery.coordinates;
+                };
+
+                var ID = thisBrewery.id;
+                database.ref("Breweries").once('value', function (snapshot) {
+                    if (!snapshot.hasChild(ID)) {
+                        database.ref("Breweries").child(ID).set({
+                            name: name,
+                            location: location,
+                            distanceInMiles: distance,
+                            phone: phone,
+                            price: price,
+                            coordinates: coordinates,
+
+                        })
+                    } else {
+                        // alert("already exists"),
+                        database.ref("Breweries").child(ID).update({
+                            name: name,
+                            location: location,
+                            distanceInMiles: distance,
+                            phone: phone,
+                            price: price,
+                            coordinates: coordinates,
+
+                        })
                     };
-                    if (thisBrewery.location) {
-                        location = thisBrewery.location;
-                    };
-                    if (thisBrewery.distance) {
-                        distanceInMiles = parseFloat(thisBrewery.distance * 0.00062137).toFixed(2);
-                    };
-                    if (thisBrewery.phone) {
-                        phone = thisBrewery.phone;
-                    };
-                    if (thisBrewery.price) {
-                        price = thisBrewery.price;
-                    };
-                    if (thisBrewery.coordinates) {
-                        coordinates = thisBrewery.coordinates;
-                    };
+                }); // end database function
+
+                var queryURL = "https://api.yelp.com/v3/businesses/";
+                queryURL += response.businesses[i].id;
+
+                $.ajaxSetup({
+                    headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+                });
+                $.ajax({
+                    url: queryURL,
+                    method: "GET",
+
+                }).done(function (response) {
+                    var thisBrewery = response;
+
+                    var hours = [];
+
+                    if (thisBrewery.hours) {
+                        hours = thisBrewery.hours;
+                    }
+
+                    // add it to the database 
 
                     var ID = thisBrewery.id;
-                    database.ref("Breweries-Test").once('value', function (snapshot) {
-                        if (!snapshot.hasChild(ID)) {
-                            database.ref("Breweries-Test").child(ID).set({
-                                name: name,
-                                location: location,
-                                distanceInMiles: distance,
-                                phone: phone,
-                                price: price,
-                                coordinates: coordinates,
 
-                            })
-                        } else {
-                            // alert("already exists"),
-                            database.ref("Breweries-Test").child(ID).update({
-                                name: name,
-                                location: location,
-                                distanceInMiles: distance,
-                                phone: phone,
-                                price: price,
-                                coordinates: coordinates,
-
-                            })
-                        };
-                    }); // end database function
-
-                    var queryURL = "https://api.yelp.com/v3/businesses/";
-                    queryURL += response.businesses[i].id;
-
-                    $.ajaxSetup({
-                        headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+                    database.ref("Breweries").child(ID).update({
+                        hours: hours,
                     });
-                    $.ajax({
-                        url: queryURL,
-                        method: "GET",
+                //     
+                });
 
-                    }).done(function (response) {
-                        var thisBrewery = response;
 
-                        var hours = [];
+                var queryURL = "https://api.yelp.com/v3/businesses/";
+                queryURL += response.businesses[i].id;
 
-                        if (thisBrewery.hours) {
-                            hours = thisBrewery.hours;
-                        }
+                $.ajaxSetup({
+                    headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+                });
+                $.ajax({
+                    url: queryURL,
+                    method: "GET",
+                }).done(function (response) {
+                    var thisBrewery = response;
 
-                        // add it to the database 
+                    var hours = [];
 
-                        var ID = thisBrewery.id;
+                    if (thisBrewery.hours) {
+                        hours = thisBrewery.hours;
+                    }
 
-                        database.ref("Breweries-Test").child(ID).update({
-                            hours: hours,
-                        })
+                    // add it to the database 
 
-                    });
+                    var ID = thisBrewery.id;
 
-                } //end for loop
+                    database.ref("Breweries").child(ID).update({
+                        hours: hours,
+                    })
+                });
 
-                // $("#output1").html(JSON.stringify(response));
-            })
-        },
+            } //end for loop
+
+            // $("#output1").html(JSON.stringify(response));
+        })
+},
+}
+
+function reset(output) {
+    output.empty();
+};
+
+function getModalInfo(id, brewerySnapshot) {
+    // empty any old info
+    $(".open").empty();
+    $(".address").empty();
+    $(".distance").empty();
+    $(".hours").empty();
+    $(".beers").html("<p class='bold'>Top Beers</p>");
+    $(".map-modal").empty();
+    $(".phone").empty();
+    $(".conversation").empty();
+
+    // get the brewery form the last snapshot of firebase
+    var thisBrewery = brewerySnapshot[id];
+    var name = thisBrewery.name;
+    var open = "";
+    let phone = thisBrewery.display_phone;
+    let lat = thisBrewery.coordinates.latitude;
+    let long = thisBrewery.coordinates.longitude;
+    let mapDisp = '<div id="map_canvas" style="width:auto; height: 300px;"></div>'
+
+    let myLatlng = { lat, long };
+
+    function initializeMap() {
+        var mapOptions = {
+            center: new google.maps.LatLng(lat, long),
+            zoom: 15,
+            mapTypeId: google.maps.MapTypeId.HYBRID
+        };
+        var map = new google.maps.Map(document.getElementById("map_canvas"),
+            mapOptions);
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(lat, long)
+        });
+        marker.setMap(map);
     }
 
-
-
-               
-                // console.log(response);
-                // $("#more-info").empty();
-                // $(".header_title").html(response.name);
-                
-            
-                
-                // var name = response.name;
-                // var modalContent = `
-                    
-                //     <h2>${response.name}</h2>
-                //     ${open}
-                //     ${"<h4> Phone #: "+ phone + "</h4>"}
-                //     ${mapDisp}
-                                                  
-                // `
-                
-                // $("#more-info").append(modalContent);
-                // return initializeMap();
-                
-
-    function getModalInfo(id, brewerySnapshot) {
-        // empty any old info
-        $(".open").empty();
-        $(".address").empty();
-        $(".distance").empty();
-        $(".hours").empty();
-        $(".beers").html("<p class='bold'>Top Beers</p>");
-        $(".map-modal").empty();
-        $(".phone").empty();
-
-        // get the brewery form the last snapshot of firebase
-        var thisBrewery = brewerySnapshot[id];
-        var name = thisBrewery.name;
-        var open = "";
-
-        let phone = thisBrewery.display_phone;
-        let lat = thisBrewery.coordinates.latitude;
-        let long = thisBrewery.coordinates.longitude;
-        let mapDisp = '<div id="map_canvas" style="width:auto; height: 300px;"></div>'        
-
-        let myLatlng = {lat, long};
-
-         function initializeMap() {
-            var mapOptions = {
-                center: new google.maps.LatLng(lat, long),
-                zoom: 15,
-                mapTypeId: google.maps.MapTypeId.HYBRID
-            };
-            var map = new google.maps.Map(document.getElementById("map_canvas"),
-                mapOptions);
-            var marker = new google.maps.Marker({
-                position: new google.maps.LatLng(lat, long)
-            });
-            marker.setMap(map);
-        }
-
-        if (thisBrewery.hours) {
-            if (thisBrewery.hours[0].is_open_now && thisBrewery.hours[0].is_open_now === true) {
-
-                $(".open").append('Open Now').css('color', 'green');
-
-            } else {
-                $(".open").append('Closed Now').css('color', 'red');
-            };
-
-            var hours = "<p class='bold'>Hours</p>";
-            $.each(thisBrewery.hours[0].open, function (key, value) {
-                var day;
-                switch (value.day) {
-                case 0:
-                    day = "Mon"
-                    break;
-                case 1:
-                    day = "Tue"
-                    break;
-                case 2:
-                    day = "Wed"
-                    break;
-                case 3:
-                    day = "Thu"
-                    break;
-                case 4:
-                    day = "Fri"
-                    break;
-                case 5:
-                    day = "Sat"
-                    break;
-                case 6:
-                    day = "Sun"
-                    break;
-                }
-                var start = moment(value.start, 'HHmm').format('h:mm a');
-                var end = moment(value.end, 'HHmm').format('h:mm a');
-                // nextTrain = moment(train.firstTrainTime, 'HH:mm a').format('hh:mm a') + " (first)";
-                hours += day + ": " + start + " - " + end + "<br>";
-
-            })
-            $(".open").append(open);
-            $(".hours").append(hours);
-
-        }
-
-        if (thisBrewery.beers) {
-            var beerlist = $("<ol>");
-            $.each(thisBrewery.beers, function (key, value) {
-                var beer = $("<li>").append(value);
-                $(beerlist).append(beer);
-            })
-            $(".beers").append(beerlist);
+    // if the hours are listed
+    if (thisBrewery.hours) {
+        if (thisBrewery.hours[0].is_open_now && thisBrewery.hours[0].is_open_now === true) {
+            $(".open").append('Open Now').css('color', 'green');
         } else {
-            var button = $("<button>").attr("id","addbeers").attr("data-id",id).append("Add Beers");
+            $(".open").append('Closed Now').css('color', 'red');
+        };
+
+        var hours = "<p class='bold'>Hours</p>";
+        $.each(thisBrewery.hours[0].open, function (key, value) {
+            var day;
+            switch (value.day) {
+            case 0:
+                day = "Mon"
+                break;
+            case 1:
+                day = "Tue"
+                break;
+            case 2:
+                day = "Wed"
+                break;
+            case 3:
+                day = "Thu"
+                break;
+            case 4:
+                day = "Fri"
+                break;
+            case 5:
+                day = "Sat"
+                break;
+            case 6:
+                day = "Sun"
+                break;
+            }
+            var start = moment(value.start, 'HHmm').format('h:mm a');
+            var end = moment(value.end, 'HHmm').format('h:mm a');
+            // nextTrain = moment(train.firstTrainTime, 'HH:mm a').format('hh:mm a') + " (first)";
+            hours += day + ": " + start + " - " + end + "<br>";
+
+        })
+        $(".open").append(open);
+        $(".hours").append(hours);
+    }
+
+    if (thisBrewery.beers) {
+        var beerlist = $("<ol>");
+        $.each(thisBrewery.beers, function (key, value) {
+            var beer = $("<li>").append(value);
+            $(beerlist).append(beer);
+        })
+        $(".beers").append(beerlist);
+    } else {
+        if (loggedIn()) {
+            var button = $("<button>").attr("id", "addbeers").attr("data-id", id).append("Add Beers");
             $(".beers").append(button);
         }
+    };
 
-        $(".distance").append(thisBrewery.distanceInMiles + " miles");
-        $(".header_title").html(name);
-        $(".address").append(thisBrewery.location.display_address.join("<br>"));
-        $(".phone").append("<a href='tel:" + thisBrewery.phone + "'> Call Us: " + thisBrewery.phone + "</a>");
+    $(".distance").append(thisBrewery.distanceInMiles + " miles");
+    $(".header_title").html(name);
+    $(".address").append(thisBrewery.location.display_address.join("<br>"));
+    $(".phone").append("<a href='tel:" + thisBrewery.phone + "'> Call Us: " + thisBrewery.phone + "</a>");
+    $(".map-modal").append(mapDisp);
 
-       $(".map-modal").append(mapDisp);
+    // comment box 
+    if (loggedIn()) {
+        $(".comments").show();
+        var conversation = $(".conversation");
 
-        return initializeMap();
-    } //getModalInfo
+        $.each(thisBrewery.comments, function (key, value) {
+            var commentDisplay = $("<div>").addClass("commentDisplay");
+            var user = $("<p>").addClass("bold mb-0").html(value.user);
+            var comment = $("<p>").addClass("mb-0").html(value.comment);
+            $(commentDisplay).append(user);
+            if (value.drinking) {
+                var drinking = $("<p>").html("drinking: " + value.drinking).addClass("beverage").appendTo(commentDisplay);
+            }
+            $(commentDisplay).append(comment);
 
-    function addBeers(id) {
-        console.log(id);
-        $(".beers").html(`
+            $(conversation).append(commentDisplay)
+        });
+
+    } else {
+        $(".comments").hide();
+    };
+
+    return initializeMap();
+
+} //getModalInfo
+
+function addComment(id) {
+    console.log(id);
+    var comment = $("#review").val();
+    var drinking = $("#drinking").val();
+
+    database.ref("Breweriesfwor").child(id).child("comments").push().set({
+        comment: comment,
+        drinking: drinking,
+        user: globalUser.email
+    });
+};
+
+// check if the user is logged in
+function loggedIn() {
+
+    if (globalUser) {
+        return true;
+    } else {
+        return false;
+    };
+}
+
+function addBeers(id) {
+    console.log(id);
+    $(".beers").html(`
             <form>
                 <input type="text" id="beer1" placeholder="beer1" /><br />
                 <input type="text" id="beer2" placeholder="beer2" /><br />
@@ -297,63 +349,78 @@ var yelp = {};
             </form>
 
             `)
+};
 
-    };
-    function enterBeers(id) {
-        var beers = [];
+function enterBeers(id) {
+    var beers = [];
 
-        for (var i = 1; i < 6; i++) {
-            beers.push($("#beer" + i).val());
-        }
-        database.ref("Breweries-Test").child(id).update({
-            beers: beers,
-        });
+    for (var i = 1; i < 6; i++) {
+        beers.push($("#beer" + i).val());
     }
-
-    // click handlers
-    
-    // will request access to location again and run the geolocator
-    $("#nearme").on("click", geoFindMe);
-
-
-    $("#get").on("click", function () {
-
-        var location = $("#location").val();
-        console.log(location);
-        $("#location").val('');
-        yelp.getBreweries($("#breweries"), location);
+    database.ref("Breweries").child(id).update({
+        beers: beers,
     });
+}
 
-    $(document).on("click", ".more", function () {
+// click handlers
 
-        var ID = $(this).data("id")
-        $(".header_title").html("No info yet, try again in a second")
-        $("#more-info-modal").removeAttr("data-id").attr("data-id",ID);
+// will request access to location again and run the geolocator
+$("#nearme").on("click", geoFindMe);
 
-        
-        getModalInfo(ID, breweries);
-        
-    }).on('shown.bs.modal', function () {
-        initializeMap();
+$("#get").on("click", function () {
 
-    });
+    $("#breweries").empty();
 
-    $(document).on("click", "#addbeers", function () {
-        var id = $(this).data("id");
-
-        addBeers(id);
-
-    });
-    $(document).on("click", "#enterBeers", function () {
-        event.preventDefault();
-        var id = $(this).data("id");
+    var location = $("#location").val();
+    console.log(location);
+    $("#location").val('');
+    yelp.getBreweries($("#breweries"), location);
+});
 
 
-        enterBeers(id);
+$(document).on("click", ".more", function () {
 
-    });
+    var ID = $(this).data("id")
+    $(".header_title").html("No info yet, try again in a second")
+    $("#more-info-modal").removeAttr("data-id").attr("data-id", ID);
 
+    getModalInfo(ID, breweries);
 
+}).on('shown.bs.modal', function () {
+    initializeMap();
+
+});
+
+$(document).on("click", "#addbeers", function () {
+    var id = $(this).data("id");
+
+    addBeers(id);
+
+});
+$(document).on("click", "#enterBeers", function () {
+    event.preventDefault();
+    var id = $(this).data("id");
+    enterBeers(id);
+});
+
+$(window).on("scroll", function () {
+    var scrollHeight = $(document).height();
+    var scrollPosition = $(window).height() + $(window).scrollTop();
+    if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+        // when scroll to bottom of the page
+        yelp.params.offset += yelp.params.limit;
+        yelp.getBreweries($("#breweries"));
+        console.log("working");
+        console.log(yelp.params.offset);
+    }
+});
+
+$(document).on("click", "#postComment", function () {
+    event.preventDefault();
+    var id = $(this).parents("#more-info-modal").data("id");
+
+    addComment(id);
+})
 
 /*google maps api key AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
@@ -366,6 +433,7 @@ yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW
 
 $(window).on("load", function () {
     geoFindMe();
+
     //console.log(geoFindMe()); 
 });
 
@@ -401,7 +469,9 @@ $(function () {
 });
 
 function geoFindMe() {
+
     var output = document.getElementById("out");
+    $("#breweries").empty();
 
     if (!navigator.geolocation) {
         output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
@@ -409,6 +479,7 @@ function geoFindMe() {
     }
     //Option to get data out of geoFindMe function is to take function success out of the nest.
     function success(position) {
+        $("#breweries").empty();
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
         console.log(latitude);
@@ -416,6 +487,7 @@ function geoFindMe() {
 
         yelp.params.latitude = latitude;
         yelp.params.longitude = longitude;
+        yelp.params.offset += 0;
         //pass in the html element to populate the breweries
         yelp.getBreweries($("#breweries"));
 
@@ -468,6 +540,7 @@ $("#login").on("click", function (e) {
         var errorCode = error.code;
         var errorMessage = error.message;
     });
+
 })
 //Real time authentication listener
 firebase.auth().onAuthStateChanged(user => {
@@ -492,9 +565,12 @@ firebase.auth().onAuthStateChanged(user => {
             $("#comment-modal").hide();
         });
         console.log("logged in");
+
     } else {
         console.log("not logged in");
+        // globalUser = firebase.auth().currentUser;
     }
+    globalUser = firebase.auth().currentUser;
 });
 //Sign out button for user
 $("#signOut").on("click", function () {
@@ -562,10 +638,10 @@ $(".fb").on("click", function () {
 $("#commentBtn").leanModal({
     top: 100,
     overlay: 0.6,
-    closeButton: ".modal_close",    
+    closeButton: ".modal_close",
 });
 
-database.ref("Breweries-Test").on("value", function (snapshot) {
+database.ref("Breweries").on("value", function (snapshot) {
     //when the database is changed, update the breweries variable
     breweries = snapshot.val();
     //if the modal is open it has a data-id, which is the brewey id. update the modal info for the current brewery
@@ -573,22 +649,3 @@ database.ref("Breweries-Test").on("value", function (snapshot) {
         getModalInfo($("#more-info-modal").attr("data-id"), breweries);
     }
 });
-
-// var email = document.getElementById('email');
-
-// function checkEmail(email) {
-
-//     var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-
-//     if (!filter.test(email.value)) {
-//         alert('Please provide a valid email address');
-//         email.focus;
-//         return false;
-//     }
-// }
-
-// $("#submit").on("click", function(event){
-//     event.preventDefault();
-//     checkEmail(email);
-// });
-

@@ -82,7 +82,10 @@
                                         <i class="fa fa-angle-double-left"></i> Back</a>
                                 </div>
                                 <div class="one_half last">
-                                    <a href="#" id="login" class="btn btn_red">Login</a>
+                                    <a href="#"
+                                       id="login"
+                                       class="btn btn_red modal_close">Login</a>
+
                                 </div>
                             </div>
                         </form>
@@ -112,7 +115,13 @@
                                         <i class="fa fa-angle-double-left"></i> Back</a>
                                 </div>
                                 <div class="one_half last">
-                                    <a href="#" id="register" class="btn btn_red">Register</a>
+
+                                   
+
+                                    <a href="#"
+                                       id="register"
+                                       class="btn btn_red modal_close">Register</a>
+
                                 </div>
                             </div>
                         </form>
@@ -127,15 +136,41 @@
                 <span class="modal_close">
                         <i class="fa fa-times"></i>
                     </span>
-            </header>
-            <div id="more-info" class="p-4">
-                <p class="open bold"></p>
-                <p class="distance"></p>
-                <p class="address"></p>
-                <p class="phone"></p>
-                <div class="hours">
-                </div>
-                <div class="beers mt-3">
+
+                </header>
+
+                <div id="more-info" class="p-4">
+                    <p class="open bold"></p>
+                    <p class="distance"></p>
+                    <p class="address"></p>
+                    <p class="phone"></p>
+                    <div class="hours">
+                        
+                    </div>
+
+                    <div class="beers mt-3">
+                
+                    </div>
+
+                    <div class="map-modal mt-3"></div>
+                    <div class="comments mt-3">
+
+                        <div class="conversation"></div>
+
+                        <p class="bold">Comment:</p>
+                        <form>
+                            <label>What Are You Drinking?</label><br>
+                            <input id="drinking" type="text"><br>
+                            <label>Comment:</label><br>
+                            <textarea name="message" id="review" rows="6" cols="30" required></textarea><br>                               
+                            <button id="postComment" class="btn btn-default">Submit</button>
+                        </form>
+
+
+
+                    </div>
+                    
+
                 </div>
                 <div class="map-modal mt-3"></div>
             </div>
@@ -222,13 +257,24 @@
                     <p class="m-auto py-5">Nothing to see here. Show us your location or do a search to find breweries!</p>
                 </div>
             </div>
-            <!-- foot content -->
-            <footer class="container-fluid darkgreen text-light mt-3">
-                <p class="text-center">© 2017 brewmaster</p>
-                <div class="text-center">
-                    <ul class="list-inline">
-                        <li class="list-inline-item">
-                            <a href="" target="_blank">
+
+            <div class="row mt-2"
+                 id="breweries">
+                 <p class="m-auto py-5">Nothing to see here. Show us your location or do a search to find breweries!</p> 
+             
+            </div>
+        </div>
+
+        <!-- foot content -->
+        <footer class="container-fluid darkgreen text-light mt-3">
+            <p class="text-center">© 2017 brewmaster</p>
+            <div class="text-center">
+                <ul class="list-inline">
+
+                    <li class="list-inline-item">
+                        <a href=""
+                           target="_blank">
+
                             <i class="fa fa-youtube-square fa-inverse"
                                aria-hidden="true"></i>
                         </a>
