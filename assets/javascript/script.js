@@ -146,6 +146,7 @@ $(document).ready(function () {
                         mapOptions);
                     var marker = new google.maps.Marker({
                         position: new google.maps.LatLng(lat, long)
+                    
                     });
                     marker.setMap(map);
                 }
