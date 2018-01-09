@@ -24,7 +24,6 @@ yelp = {
             this.params.latitude = '';
             this.params.longitude = '';
         }
-
         var queryURL = "https://api.yelp.com/v3/businesses/search";
         queryURL += '?' + $.param(this.params);
         $.ajaxSetup({
@@ -59,64 +58,94 @@ yelp = {
                         </div>
                     </div>
                     `
-                output.append(newBrewery);
-                $(".modal_trigger_more").leanModal({
-                    top: 100,
-                    overlay: 0.6,
-                    closeButton: ".modal_close"
-                });
 
-                // declare the variables
-                var thisBrewery = response.businesses[i]
-                var name = "";
-                var location = [];
-                var distanceInMiles = "Unlisted";
-                var phone = "Unlisted";
-                var price = "Unlisted";
-                var coordinates = [];
+                    output.append(newBrewery);
+                    $(".modal_trigger_more").leanModal({
+                        top: 100,
+                        overlay: 0.6,
+                        closeButton: ".modal_close"
+                    });
 
-                //if the api returns a value, set the variable
-                if (thisBrewery.name) {
-                    name = thisBrewery.name;
-                };
-                if (thisBrewery.location) {
-                    location = thisBrewery.location;
-                };
-                if (thisBrewery.distance) {
-                    distanceInMiles = parseFloat(thisBrewery.distance * 0.00062137).toFixed(2);
-                };
-                if (thisBrewery.phone) {
-                    phone = thisBrewery.phone;
-                };
-                if (thisBrewery.price) {
-                    price = thisBrewery.price;
-                };
-                if (thisBrewery.coordinates) {
-                    coordinates = thisBrewery.coordinates;
-                };
+                    // declare the variables
+                    var thisBrewery = response.businesses[i]
+                    var name = "";
+                    var location = [];
+                    var distanceInMiles = "Unlisted";
+                    var phone = "Unlisted";
+                    var price = "Unlisted";
+                    var coordinates = [];
 
-                var ID = thisBrewery.id;
-                database.ref("Breweries-Test").once('value', function (snapshot) {
-                    if (!snapshot.hasChild(ID)) {
-                        database.ref("Breweries-Test").child(ID).set({
-                            name: name,
-                            location: location,
-                            distanceInMiles: distance,
-                            phone: phone,
-                            price: price,
-                            coordinates: coordinates,
+                    //if the api returns a value, set the variable
+                    if (thisBrewery.name) {
+                        name = thisBrewery.name;
+                    };
+                    if (thisBrewery.location) {
+                        location = thisBrewery.location;
+                    };
+                    if (thisBrewery.distance) {
+                        distanceInMiles = parseFloat(thisBrewery.distance * 0.00062137).toFixed(2);
+                    };
+                    if (thisBrewery.phone) {
+                        phone = thisBrewery.phone;
+                    };
+                    if (thisBrewery.price) {
+                        price = thisBrewery.price;
+                    };
+                    if (thisBrewery.coordinates) {
+                        coordinates = thisBrewery.coordinates;
+                    };
 
-                        })
-                    } else {
-                        // alert("already exists"),
-                        database.ref("Breweries-Test").child(ID).update({
-                            name: name,
-                            location: location,
-                            distanceInMiles: distance,
-                            phone: phone,
-                            price: price,
-                            coordinates: coordinates,
+                    var ID = thisBrewery.id;
+                    database.ref("Breweries").once('value', function (snapshot) {
+                        if (!snapshot.hasChild(ID)) {
+                            database.ref("Breweries").child(ID).set({
+                                name: name,
+                                location: location,
+                                distanceInMiles: distance,
+                                phone: phone,
+                                price: price,
+                                coordinates: coordinates,
 
+                            })
+                        } else {
+                            // alert("already exists"),
+                            database.ref("Breweries").child(ID).update({
+                                name: name,
+                                location: location,
+                                distanceInMiles: distance,
+                                phone: phone,
+                                price: price,
+                                coordinates: coordinates,
+
+                            })
+                        };
+                    }); // end database function
+
+                    var queryURL = "https://api.yelp.com/v3/businesses/";
+                    queryURL += response.businesses[i].id;
+
+                    $.ajaxSetup({
+                        headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
+                    });
+                    $.ajax({
+                        url: queryURL,
+                        method: "GET",
+
+                    }).done(function (response) {
+                        var thisBrewery = response;
+
+                        var hours = [];
+
+                        if (thisBrewery.hours) {
+                            hours = thisBrewery.hours;
+                        }
+
+                        // add it to the database 
+
+                        var ID = thisBrewery.id;
+
+                        database.ref("Breweries").child(ID).update({
+                            hours: hours,
                         })
                     };
                 }); // end database function
@@ -130,7 +159,6 @@ yelp = {
                 $.ajax({
                     url: queryURL,
                     method: "GET",
-
                 }).done(function (response) {
                     var thisBrewery = response;
 
@@ -329,20 +357,30 @@ function addBeers(id) {
 function enterBeers(id) {
     var beers = [];
 
-    for (var i = 1; i < 6; i++) {
-        beers.push($("#beer" + i).val());
-    }
-    database.ref("Breweries-Test").child(id).update({
-        beers: beers,
-    });
-}
 
-// click handlers
+        for (var i = 1; i < 6; i++) {
+            beers.push($("#beer" + i).val());
+        }
+        database.ref("Breweries").child(id).update({
+            beers: beers,
+        });
+    }
+    
+    // click handlers
 
 // will request access to location again and run the geolocator
 $("#nearme").on("click", geoFindMe);
 
 $("#get").on("click", function () {
+
+
+        $("#breweries").empty();
+        
+        var location = $("#location").val();
+        console.log(location);
+        $("#location").val('');
+        yelp.getBreweries($("#breweries"), location);
+    });
 
     $("#breweries").empty();
 
@@ -375,9 +413,19 @@ $(document).on("click", "#addbeers", function () {
 $(document).on("click", "#enterBeers", function () {
     event.preventDefault();
     var id = $(this).data("id");
+  enterBeers(id);
+});
 
-    enterBeers(id);
 
+$(window).on("scroll", function () {
+    var scrollHeight = $(document).height();
+    var scrollPosition = $(window).height() + $(window).scrollTop();
+    if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+        // when scroll to bottom of the page
+        yelp.params.offset += 12;
+        yelp.getBreweries($("#breweries"));
+        console.log("working");
+    }
 });
 
 $(document).on("click", "#postComment", function() {
@@ -386,6 +434,7 @@ $(document).on("click", "#postComment", function() {
 
     addComment(id);
 })
+
 
 /*google maps api key AIzaSyBdGf55gWK40_TYyU6IxgZHmK58FWKHmLM
 yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx
@@ -398,6 +447,7 @@ yelp key M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW
 
 $(window).on("load", function () {
     geoFindMe();
+    
     //console.log(geoFindMe()); 
 });
 
@@ -435,6 +485,7 @@ $(function () {
 function geoFindMe() {
     
     var output = document.getElementById("out");
+    $("#breweries").empty();
 
     if (!navigator.geolocation) {
         output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
@@ -450,6 +501,7 @@ function geoFindMe() {
 
         yelp.params.latitude = latitude;
         yelp.params.longitude = longitude;
+        yelp.params.offset += 0;
         //pass in the html element to populate the breweries
         yelp.getBreweries($("#breweries"));
 
@@ -502,6 +554,7 @@ $("#login").on("click", function (e) {
         var errorCode = error.code;
         var errorMessage = error.message;
     });
+        
 })
 //Real time authentication listener
 firebase.auth().onAuthStateChanged(user => {
@@ -610,21 +663,3 @@ database.ref("Breweries-Test").on("value", function (snapshot) {
         getModalInfo($("#more-info-modal").attr("data-id"), breweries);
     }
 });
-
-// var email = document.getElementById('email');
-
-// function checkEmail(email) {
-
-//     var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-
-//     if (!filter.test(email.value)) {
-//         alert('Please provide a valid email address');
-//         email.focus;
-//         return false;
-//     }
-// }
-
-// $("#submit").on("click", function(event){
-//     event.preventDefault();
-//     checkEmail(email);
-// });
