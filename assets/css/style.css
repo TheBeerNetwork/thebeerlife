@@ -278,6 +278,22 @@ a.btn_red {
 /*    margin-left: 50% !important;
     transform: translate(-50%,0);*/
 }
+
+#more-info-modal .comments {
+    display: none;
+}
+#more-info-modal .commentDisplay {
+    background: #ddd;
+    border-radius: 7px;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+#more-info-modal .beverage {
+    font-size: 13px;
+    font-style: italic;
+}
+
 .hours {
     font-size: 14px;
     line-height: 16px;
