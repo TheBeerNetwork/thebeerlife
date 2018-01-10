@@ -16,8 +16,14 @@ yelp = {
         limit: 6,
         offset: 0,
     },
+    ran: false,
+    stop: false,
 
     getBreweries: function (output, location) {
+
+        this.ran = true;
+
+        $("#loading").show();
         console.log(yelp.params);
         if (location) {
             this.params.location = location;
@@ -34,6 +40,11 @@ yelp = {
             method: "GET",
             // Authorization: "Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx",
         }).done(function (response) {
+            console.log(response);
+            if (response.businesses.length < 1) {
+                yelp.stop = true;
+            };
+            $("#loading").hide();
             for (var i = 0; i < response.businesses.length; i++) {
                 var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
                 var newBrewery = `
@@ -369,6 +380,8 @@ function enterBeers(id) {
 $("#nearme").on("click", geoFindMe);
 
 $("#get").on("click", function () {
+    yelp.stop = false;
+    yelp.params.offset = 0;
 
     $("#breweries").empty();
 
@@ -405,19 +418,23 @@ $(document).on("click", "#enterBeers", function () {
 });
 
 $(window).on("scroll", function () {
-    var scrollHeight = $(document).height();
-    var scrollPosition = $(window).height() + $(window).scrollTop();
-    if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
-        // when scroll to bottom of the page
-        yelp.params.offset += yelp.params.limit;
-        yelp.getBreweries($("#breweries"));
-        console.log("working");
-        console.log(yelp.params.offset);
+    if (yelp.ran && !yelp.stop){
+        var scrollHeight = $(document).height();
+        var scrollPosition = $(window).height() + $(window).scrollTop();
+        if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+            // when scroll to bottom of the page
+            yelp.params.offset += yelp.params.limit;
+            yelp.getBreweries($("#breweries"));
+            console.log("working");
+            console.log(yelp.params.offset);
+        }
     }
 });
 
+
 $(document).on("click", "#postComment", function () {
     event.preventDefault();
+
     var id = $(this).parents("#more-info-modal").data("id");
 
     addComment(id);
@@ -472,7 +489,6 @@ $(function () {
 function geoFindMe() {
 
     var output = document.getElementById("out");
-    $("#breweries").empty();
 
     if (!navigator.geolocation) {
         output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
@@ -480,6 +496,9 @@ function geoFindMe() {
     }
     //Option to get data out of geoFindMe function is to take function success out of the nest.
     function success(position) {
+        yelp.stop = false;
+        yelp.params.offset = 0;
+
         $("#breweries").empty();
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
