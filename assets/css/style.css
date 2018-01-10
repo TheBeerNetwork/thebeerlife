@@ -302,3 +302,16 @@ a.btn_red {
     font-size: 16px;
     margin-bottom: 3px;
 }
+#nearme {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+#get {
+	padding-top: 10px;
+	padding-bottom: 10px;
+
+}
+.carousel-inner {
+padding-bottom: 5px;
+
+}
