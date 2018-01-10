@@ -214,10 +214,8 @@ a.btn_red {
     clear: both;
     overflow: hidden;
 }
+
 /* End CSS for login Modal */
-
-
-
 .darkgreen {
     background-color: #5f7c2a;
 }
@@ -240,8 +238,6 @@ a.btn_red {
 }
 .card-footer {
 	background-color:#753522;
-
-
 }
 .card-header {
 	background-color:#a47c48;
@@ -271,10 +267,13 @@ a.btn_red {
 
 
 #more-info-modal {
-    width: 500px;
+    width: 80%;
     max-width: 95%;
     max-height: 75vh;
     overflow: scroll;
+    margin-left: 10% !important;
+    left: 0 !important;
+
 /*    margin-left: 50% !important;
     transform: translate(-50%,0);*/
 }
@@ -311,7 +310,11 @@ a.btn_red {
 	padding-bottom: 10px;
 
 }
+
+.row {
+    /*width:100%;*/
+}
 .carousel-inner {
-padding-bottom: 5px;
+    padding-bottom: 5px;
 
 }

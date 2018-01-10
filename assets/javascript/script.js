@@ -13,11 +13,12 @@ yelp = {
     params: {
         categories: "breweries",
         sort_by: "distance",
-        limit: 3,
+        limit: 6,
         offset: 0,
     },
 
     getBreweries: function (output, location) {
+        console.log(yelp.params);
         if (location) {
             this.params.location = location;
             this.params.latitude = '';
@@ -36,7 +37,7 @@ yelp = {
             for (var i = 0; i < response.businesses.length; i++) {
                 var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
                 var newBrewery = `
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-header">${response.businesses[i].name}</div>
                         <div class="card-body">
