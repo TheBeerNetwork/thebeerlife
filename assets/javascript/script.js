@@ -320,7 +320,7 @@ function addComment(id) {
     var comment = $("#review").val();
     var drinking = $("#drinking").val();
 
-    database.ref("Breweriesfwor").child(id).child("comments").push().set({
+    database.ref("Breweries").child(id).child("comments").push().set({
         comment: comment,
         drinking: drinking,
         user: globalUser.email
@@ -418,6 +418,7 @@ $(window).on("scroll", function () {
 
 $(document).on("click", "#postComment", function () {
     event.preventDefault();
+
     var id = $(this).parents("#more-info-modal").data("id");
 
     addComment(id);
@@ -472,7 +473,7 @@ $(function () {
 function geoFindMe() {
 
     var output = document.getElementById("out");
-    $("#breweries").empty();
+
 
     if (!navigator.geolocation) {
         output.innerHTML = "<p>Geolocation is not supported by your browser</p>";

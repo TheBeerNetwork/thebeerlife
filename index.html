@@ -139,32 +139,37 @@
 
                 </header>
 
-                <div id="more-info" class="p-4">
-                    <p class="open bold"></p>
-                    <p class="distance"></p>
-                    <p class="address"></p>
-                    <p class="phone"></p>
-                    <div class="hours">
+                <div id="more-info" class="p-4 row">
+                    <div class="col-12 col-md-6">
+                        <p class="open bold"></p>
+                        <p class="distance"></p>
+                        <p class="address"></p>
+                        <p class="phone"></p>
+                        <div class="hours">
+                            
+                        </div>
                         
+                        <div class="beers mt-3">
+                                        
+                        </div>
                     </div>
 
-                    <div class="beers mt-3">
-                
+                    <div class="col-12 col-md-6">
+                        <div class="map-modal mt-3"></div>
                     </div>
-
-                    <div class="map-modal mt-3"></div>
-                    <div class="comments mt-3">
-
-                        <div class="conversation"></div>
-
-                        <p class="bold">Comment:</p>
-                        <form>
-                            <label>What Are You Drinking?</label><br>
-                            <input id="drinking" type="text"><br>
-                            <label>Comment:</label><br>
-                            <textarea name="message" id="review" rows="6" cols="30" required></textarea><br>                               
-                            <button id="postComment" class="btn btn-default">Submit</button>
-                        </form>
+                    <div class="col-12">
+                        <div class="comments mt-3">
+                        
+                            <div class="conversation mb-4"></div>
+                        
+                            <form>
+                                <label>What Are You Drinking?</label><br>
+                                <input id="drinking" type="text"><br>
+                                <label>Comment:</label><br>
+                                <textarea name="message" class="commentinput" id="review" rows="6" cols="30" required></textarea><br>                               
+                                <button id="postComment" class="btn btn-white">Submit</button>
+                            </form>
+                    </div>
                     </div>
                     
 
@@ -222,14 +227,13 @@
                         </label>
                     </div>
                 </div>
-                <div class="row mt-4" id="breweries">
-                    <p class="m-auto py-5">Nothing to see here. Show us your location or do a search to find breweries!</p>
-                </div>
+
             </div>
 
             <div class="row mt-2"
                  id="breweries">
                  <p class="m-auto py-5">Nothing to see here. Show us your location or do a search to find breweries!</p> 
+                 <div class="loader">Loading...</div>
              
             </div>
         </div>
