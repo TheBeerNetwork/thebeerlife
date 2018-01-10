@@ -320,7 +320,7 @@ function addComment(id) {
     var comment = $("#review").val();
     var drinking = $("#drinking").val();
 
-    database.ref("Breweriesfwor").child(id).child("comments").push().set({
+    database.ref("Breweries").child(id).child("comments").push().set({
         comment: comment,
         drinking: drinking,
         user: globalUser.email
