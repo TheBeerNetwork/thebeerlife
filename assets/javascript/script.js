@@ -341,6 +341,8 @@ var yelp = {};
         if ($(window).scrollTop() == $(document).height() - $(window).height()) {
             // ajax call get data from server and append to the div
                     console.log("working");
+                    yelp.params.offset += 12;
+                    yelp.getBreweries($("#breweries"));
 
         }
     });
@@ -569,7 +571,7 @@ $("#commentBtn").leanModal({
     closeButton: ".modal_close"
 });
 
-database.ref("Breweries-Test").on("value", function (snapshot) {
+database.ref("Breweries").on("value", function (snapshot) {
     //when the database is changed, update the breweries variable
     breweries = snapshot.val();
     //if the modal is open it has a data-id, which is the brewey id. update the modal info for the current brewery
