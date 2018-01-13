@@ -334,10 +334,12 @@ a.btn_red {
 /*loader*/
 #loading {
     display: none;
+    text-align: center;
 }
 .loader {
   font-size: 10px;
-  margin: 50px auto;
+  margin: 50px;
+  display: inline-block;
   text-indent: -9999em;
   width: 11em;
   height: 11em;

@@ -1,6 +1,8 @@
+// holds the database
 var breweries;
 var yelp = {};
 
+// holds the user id
 var globalUser = "";
 
 jQuery.ajaxPrefilter(function (options) {
@@ -16,35 +18,43 @@ yelp = {
         limit: 6,
         offset: 0,
     },
+    // have we searched for breweries yet?
     ran: false,
+
+    // have we run out of breweries on the current search?
     stop: false,
 
     getBreweries: function (output, location) {
 
         this.ran = true;
 
+        // show the loading spinner
         $("#loading").show();
-        console.log(yelp.params);
+
+        // if a location is passed in, remove the coordinates
         if (location) {
             this.params.location = location;
             this.params.latitude = '';
             this.params.longitude = '';
         }
+
         var queryURL = "https://api.yelp.com/v3/businesses/search";
         queryURL += '?' + $.param(this.params);
+        //set the header with the api key
         $.ajaxSetup({
             headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
         });
         $.ajax({
             url: queryURL,
             method: "GET",
-            // Authorization: "Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx",
         }).done(function (response) {
-            console.log(response);
-            if (response.businesses.length < 1) {
+            // console.log(response);
+            if (response.businesses.length < yelp.params.limit) {
+                // when the response returns no businesses, stop trying to load
                 yelp.stop = true;
             };
             $("#loading").hide();
+            // for each business
             for (var i = 0; i < response.businesses.length; i++) {
                 var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
                 var newBrewery = `
@@ -71,11 +81,8 @@ yelp = {
                 `
 
                 output.append(newBrewery);
-                $(".modal_trigger_more").leanModal({
-                    top: 100,
-                    overlay: 0.6,
-                    closeButton: ".modal_close"
-                });
+
+
 
                 // declare the variables
                 var thisBrewery = response.businesses[i]
@@ -190,6 +197,13 @@ yelp = {
                 });
 
             } //end for loop
+             //initialize the leanModal
+                $(".modal_trigger_more").leanModal({
+                    top: 100,
+                    overlay: 0.6,
+                    closeButton: ".modal_close"
+                });
+
 
             // $("#output1").html(JSON.stringify(response));
         })
@@ -206,7 +220,7 @@ function getModalInfo(id, brewerySnapshot) {
     $(".address").empty();
     $(".distance").empty();
     $(".hours").empty();
-    $(".beers").html("<p class='bold'>Top Beers</p>");
+    $(".beers").before("<p class='bold'>Top Beers</p>");
     $(".map-modal").empty();
     $(".phone").empty();
     $(".conversation").empty();
@@ -281,12 +295,7 @@ function getModalInfo(id, brewerySnapshot) {
     }
 
     if (thisBrewery.beers) {
-        var beerlist = $("<ol>");
-        $.each(thisBrewery.beers, function (key, value) {
-            var beer = $("<li>").append(value);
-            $(beerlist).append(beer);
-        })
-        $(".beers").append(beerlist);
+       updateBeers(id, brewerySnapshot);
     } else {
         if (loggedIn()) {
             var button = $("<button>").attr("id", "addbeers").attr("data-id", id).append("Add Beers");
@@ -294,33 +303,15 @@ function getModalInfo(id, brewerySnapshot) {
         }
     };
 
+    
+
     $(".distance").append(thisBrewery.distanceInMiles + " miles");
     $(".header_title").html(name);
     $(".address").append(thisBrewery.location.display_address.join("<br>"));
     $(".phone").append("<a href='tel:" + thisBrewery.phone + "'> Call Us: " + thisBrewery.phone + "</a>");
     $(".map-modal").append(mapDisp);
 
-    // comment box 
-    if (loggedIn()) {
-        $(".comments").show();
-        var conversation = $(".conversation");
-
-        $.each(thisBrewery.comments, function (key, value) {
-            var commentDisplay = $("<div>").addClass("commentDisplay");
-            var user = $("<p>").addClass("bold mb-0").html(value.user);
-            var comment = $("<p>").addClass("mb-0").html(value.comment);
-            $(commentDisplay).append(user);
-            if (value.drinking) {
-                var drinking = $("<p>").html("drinking: " + value.drinking).addClass("beverage").appendTo(commentDisplay);
-            }
-            $(commentDisplay).append(comment);
-
-            $(conversation).append(commentDisplay)
-        });
-
-    } else {
-        $(".comments").hide();
-    };
+    updateComments(id, brewerySnapshot);
 
     return initializeMap();
 
@@ -336,6 +327,9 @@ function addComment(id) {
         drinking: drinking,
         user: globalUser.email
     });
+
+    $("#drinking").val('');
+    $("#review").val('');
 };
 
 // check if the user is logged in
@@ -349,9 +343,9 @@ function loggedIn() {
 }
 
 function addBeers(id) {
-    console.log(id);
+
     $(".beers").html(`
-            <form>
+            <form id="beersform">
                 <input type="text" id="beer1" placeholder="beer1" /><br />
                 <input type="text" id="beer2" placeholder="beer2" /><br />
                 <input type="text" id="beer3" placeholder="beer3" /><br />
@@ -372,7 +366,43 @@ function enterBeers(id) {
     database.ref("Breweries").child(id).update({
         beers: beers,
     });
-}
+};
+
+function updateComments(id, brewerySnapshot) {
+    var thisBrewery = brewerySnapshot[id];
+    $(".conversation").empty();
+    if (loggedIn()) {
+        $(".comments").show();
+        var conversation = $(".conversation");
+
+        $.each(thisBrewery.comments, function (key, value) {
+            var commentDisplay = $("<div>").addClass("commentDisplay");
+            var user = $("<p>").addClass("bold mb-0").html(value.user);
+            var comment = $("<p>").addClass("mb-0").html(value.comment);
+            $(commentDisplay).append(user);
+            if (value.drinking) {
+                var drinking = $("<p>").html("drinking: " + value.drinking).addClass("beverage").appendTo(commentDisplay);
+            }
+            $(commentDisplay).append(comment);
+
+            $(conversation).append(commentDisplay)
+        });
+
+    } else {
+        $(".comments").hide();
+    };
+};
+
+function updateBeers(id, brewerySnapshot) {
+    var thisBrewery = brewerySnapshot[id];
+    var beerlist = $("<ol>");
+    $.each(thisBrewery.beers, function (key, value) {
+        var beer = $("<li>").append(value);
+        $(beerlist).append(beer);
+    })
+    $(".beers").html(beerlist);
+    $("#beersform").remove();
+};
 
 // click handlers
 
@@ -666,6 +696,11 @@ database.ref("Breweries").on("value", function (snapshot) {
     breweries = snapshot.val();
     //if the modal is open it has a data-id, which is the brewey id. update the modal info for the current brewery
     if ($("#more-info-modal").attr("data-id")) {
-        getModalInfo($("#more-info-modal").attr("data-id"), breweries);
+        // getModalInfo($("#more-info-modal").attr("data-id"), breweries);
+        var brewid = $("#more-info-modal").attr("data-id");
+        updateComments(brewid, breweries);
+
+        updateBeers(brewid, breweries);
     }
 });
+
