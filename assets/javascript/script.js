@@ -5,6 +5,7 @@ var yelp = {};
 // holds the user id
 var globalUser = "";
 
+// cors-anywhere lets us keep our app token in the server side code
 jQuery.ajaxPrefilter(function (options) {
     if (options.crossDomain && jQuery.support.cors) {
         options.url = 'https://floating-dawn-43218.herokuapp.com/' + options.url;
@@ -48,15 +49,18 @@ yelp = {
             url: queryURL,
             method: "GET",
         }).done(function (response) {
-            // console.log(response);
             if (response.businesses.length < yelp.params.limit) {
-                // when the response returns no businesses, stop trying to load
+                // when the response returns fewer than the limit, stop trying to load
                 yelp.stop = true;
             };
+
             $("#loading").hide();
             // for each business
             for (var i = 0; i < response.businesses.length; i++) {
+
+                // calculate distance in miles
                 var distance = parseFloat(response.businesses[i].distance * 0.00062137).toFixed(2)
+                // create the card
                 var newBrewery = `
                 <div class="col-md-4 mb-4">
                     <div class="card">
@@ -79,10 +83,7 @@ yelp = {
                     </div>
                 </div>
                 `
-
                 output.append(newBrewery);
-
-
 
                 // declare the variables
                 var thisBrewery = response.businesses[i]
@@ -92,6 +93,7 @@ yelp = {
                 var phone = "Unlisted";
                 var price = "Unlisted";
                 var coordinates = [];
+                var ID = thisBrewery.id;
 
                 //if the api returns a value, set the variable
                 if (thisBrewery.name) {
@@ -113,8 +115,8 @@ yelp = {
                     coordinates = thisBrewery.coordinates;
                 };
 
-                var ID = thisBrewery.id;
                 database.ref("Breweries").once('value', function (snapshot) {
+                    // if the brewery doesn't exist, create it
                     if (!snapshot.hasChild(ID)) {
                         database.ref("Breweries").child(ID).set({
                             name: name,
@@ -123,10 +125,10 @@ yelp = {
                             phone: phone,
                             price: price,
                             coordinates: coordinates,
-
                         })
                     } else {
-                        // alert("already exists"),
+                        // if it exists, update the info to keep it up to date
+                        // TO DO: find a way to update the listings only every day or so?
                         database.ref("Breweries").child(ID).update({
                             name: name,
                             location: location,
@@ -139,6 +141,7 @@ yelp = {
                     };
                 }); // end database function
 
+                //another call to the a different api url to get the hours
                 var queryURL = "https://api.yelp.com/v3/businesses/";
                 queryURL += response.businesses[i].id;
 
@@ -151,7 +154,6 @@ yelp = {
 
                 }).done(function (response) {
                     var thisBrewery = response;
-
                     var hours = [];
 
                     if (thisBrewery.hours) {
@@ -159,58 +161,25 @@ yelp = {
                     }
 
                     // add it to the database 
-
-                    var ID = thisBrewery.id;
-
                     database.ref("Breweries").child(ID).update({
                         hours: hours,
                     });
-                //     
                 });
-
-
-                var queryURL = "https://api.yelp.com/v3/businesses/";
-                queryURL += response.businesses[i].id;
-
-                $.ajaxSetup({
-                    headers: { Authorization: 'Bearer M2djzFpkraUvLNT1cCMDJneOf7F9pGpDsVo99sfpwvzTcMUMXYINZUHUpE6HTUlANCezvOW1aMxXFjEptJBzgWblXKSSoxOq8dq6zKEGuO5Zh8KKswol3KK-jZo4WnYx' }
-                });
-                $.ajax({
-                    url: queryURL,
-                    method: "GET",
-                }).done(function (response) {
-                    var thisBrewery = response;
-
-                    var hours = [];
-
-                    if (thisBrewery.hours) {
-                        hours = thisBrewery.hours;
-                    }
-
-                    // add it to the database 
-
-                    var ID = thisBrewery.id;
-
-                    database.ref("Breweries").child(ID).update({
-                        hours: hours,
-                    })
-                });
-
             } //end for loop
-             //initialize the leanModal
-                $(".modal_trigger_more").leanModal({
-                    top: 100,
-                    overlay: 0.6,
-                    closeButton: ".modal_close"
-                });
 
+            //initialize the leanModal for the more info box
+            $(".modal_trigger_more").leanModal({
+                top: 100,
+                overlay: 0.6,
+                closeButton: ".modal_close"
+            });
 
-            // $("#output1").html(JSON.stringify(response));
         })
-},
+    },
 }
 
 function reset(output) {
+    // TODO: make the reset function
     output.empty();
 };
 
@@ -220,15 +189,14 @@ function getModalInfo(id, brewerySnapshot) {
     $(".address").empty();
     $(".distance").empty();
     $(".hours").empty();
-    $(".beers").before("<p class='bold'>Top Beers</p>");
+    $(".beers").before("<p class='mt-3 bold'>Top Beers</p>");
     $(".map-modal").empty();
     $(".phone").empty();
     $(".conversation").empty();
 
-    // get the brewery form the last snapshot of firebase
+    // get the brewery from the last snapshot of firebase
     var thisBrewery = brewerySnapshot[id];
     var name = thisBrewery.name;
-    var open = "";
     let phone = thisBrewery.display_phone;
     let lat = thisBrewery.coordinates.latitude;
     let long = thisBrewery.coordinates.longitude;
@@ -259,7 +227,9 @@ function getModalInfo(id, brewerySnapshot) {
         };
 
         var hours = "<p class='bold'>Hours</p>";
+        // for each entry in the hours object, 
         $.each(thisBrewery.hours[0].open, function (key, value) {
+            //get the day
             var day;
             switch (value.day) {
             case 0:
@@ -284,29 +254,29 @@ function getModalInfo(id, brewerySnapshot) {
                 day = "Sun"
                 break;
             }
+
             var start = moment(value.start, 'HHmm').format('h:mm a');
             var end = moment(value.end, 'HHmm').format('h:mm a');
-            // nextTrain = moment(train.firstTrainTime, 'HH:mm a').format('hh:mm a') + " (first)";
+            // add the day start and end times to the hours div
             hours += day + ": " + start + " - " + end + "<br>";
 
         })
-        $(".open").append(open);
+        // $(".open").append(open);
         $(".hours").append(hours);
     }
 
     if (thisBrewery.beers) {
-       updateBeers(id, brewerySnapshot);
+        updateBeers(id, brewerySnapshot);
     } else {
+        // if logged in and beers aren't listed in database, show form
         if (loggedIn()) {
             var button = $("<button>").attr("id", "addbeers").attr("data-id", id).append("Add Beers");
             $(".beers").append(button);
         }
     };
-
     
-
-    $(".distance").append(thisBrewery.distanceInMiles + " miles");
     $(".header_title").html(name);
+    $(".distance").append(thisBrewery.distanceInMiles + " miles");
     $(".address").append(thisBrewery.location.display_address.join("<br>"));
     $(".phone").append("<a href='tel:" + thisBrewery.phone + "'> Call Us: " + thisBrewery.phone + "</a>");
     $(".map-modal").append(mapDisp);
@@ -318,7 +288,6 @@ function getModalInfo(id, brewerySnapshot) {
 } //getModalInfo
 
 function addComment(id) {
-    console.log(id);
     var comment = $("#review").val();
     var drinking = $("#drinking").val();
 
@@ -343,18 +312,16 @@ function loggedIn() {
 }
 
 function addBeers(id) {
-
     $(".beers").html(`
-            <form id="beersform">
-                <input type="text" id="beer1" placeholder="beer1" /><br />
-                <input type="text" id="beer2" placeholder="beer2" /><br />
-                <input type="text" id="beer3" placeholder="beer3" /><br />
-                <input type="text" id="beer4" placeholder="beer4" /><br />
-                <input type="text" id="beer5" placeholder="beer5" /><br />
-                <button type="submit" id="enterBeers" data-id="${id}"> Add Beers </button>
-            </form>
-
-            `)
+        <form id="beersform">
+            <input type="text" id="beer1" placeholder="beer1" /><br />
+            <input type="text" id="beer2" placeholder="beer2" /><br />
+            <input type="text" id="beer3" placeholder="beer3" /><br />
+            <input type="text" id="beer4" placeholder="beer4" /><br />
+            <input type="text" id="beer5" placeholder="beer5" /><br />
+            <button type="submit" id="enterBeers" data-id="${id}"> Add Beers </button>
+        </form>
+    `)
 };
 
 function enterBeers(id) {
@@ -410,17 +377,16 @@ function updateBeers(id, brewerySnapshot) {
 $("#nearme").on("click", geoFindMe);
 
 $("#get").on("click", function () {
+    //reset
     yelp.stop = false;
     yelp.params.offset = 0;
-
     $("#breweries").empty();
 
+    // search the location
     var location = $("#location").val();
-    console.log(location);
     $("#location").val('');
     yelp.getBreweries($("#breweries"), location);
 });
-
 
 $(document).on("click", ".more", function () {
 
@@ -448,7 +414,7 @@ $(document).on("click", "#enterBeers", function () {
 });
 
 $(window).on("scroll", function () {
-    if (yelp.ran && !yelp.stop){
+    if (yelp.ran && !yelp.stop) {
         var scrollHeight = $(document).height();
         var scrollPosition = $(window).height() + $(window).scrollTop();
         if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
@@ -460,7 +426,6 @@ $(window).on("scroll", function () {
         }
     }
 });
-
 
 $(document).on("click", "#postComment", function () {
     event.preventDefault();
@@ -703,4 +668,3 @@ database.ref("Breweries").on("value", function (snapshot) {
         updateBeers(brewid, breweries);
     }
 });
-
