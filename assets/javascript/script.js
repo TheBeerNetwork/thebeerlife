@@ -189,7 +189,7 @@ function getModalInfo(id, brewerySnapshot) {
     $(".address").empty();
     $(".distance").empty();
     $(".hours").empty();
-    $(".beers").before("<p class='mt-3 bold'>Top Beers</p>");
+    $(".beers").empty();
     $(".map-modal").empty();
     $(".phone").empty();
     $(".conversation").empty();
